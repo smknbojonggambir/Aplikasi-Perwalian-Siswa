@@ -4,60 +4,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Perwalian Otomatis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #4361ee; --bg: #f8fafc; }
-        body { font-family: sans-serif; background: var(--bg); padding: 20px; color: #334155; }
-        .card { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 13px; }
-        select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; margin-top: 20px; font-weight: bold; cursor: pointer; }
-        .hidden { display: none; }
-        #userInfo { font-size: 12px; text-align: right; color: #64748b; margin-bottom: 10px; }
+        :root {
+            --primary: #4361ee;
+            --primary-hover: #3751d4;
+            --bg: #f0f4f8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.2s ease-in-out;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, #e2e8f0 0%, transparent 40%);
+            padding: 40px 20px;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--white);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.75rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #f8fafc;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            margin-top: 25px;
+            box-shadow: 0 4px 6px -1px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            margin-top: 12px;
+            font-size: 0.85rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #userInfo {
+            font-size: 0.75rem;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 20px;
+            color: var(--text-muted);
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        /* Status colors */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Animation for appearance */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #mainForm, #loginSection {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .footer-credit {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="margin-top:0; color:var(--primary); text-align: center;">Sistem Perwalian</h2>
+    <div class="header">
+        <h2>Sistem Perwalian</h2>
+        <p>SMK Digital Management System</p>
+    </div>
     
     <div id="loginSection">
-        <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="wali@smk.sch.id">
-        <label>Password</label>
-        <input type="password" id="loginPass" placeholder="123456">
-        <button id="btnLogin" onclick="login()">Masuk</button>
+        <div class="input-group">
+            <label>Email Institusi</label>
+            <input type="email" id="loginEmail" placeholder="nama@smk.sch.id">
+        </div>
+        <div class="input-group">
+            <label>Kata Sandi</label>
+            <input type="password" id="loginPass" placeholder="••••••••">
+        </div>
+        <button id="btnLogin" class="btn btn-primary" onclick="login()">
+            Masuk ke Sistem
+        </button>
     </div>
 
     <div id="mainForm" class="hidden">
-        <div id="userInfo"></div>
-        <label>Pilih Kelas</label>
+        <div style="text-align: center;">
+            <div id="userInfo"></div>
+        </div>
+
+        <label>Unit / Kelas</label>
         <select id="kelas" onchange="updateDaftarNama()">
             <option value="">-- Pilih Kelas --</option>
         </select>
 
-        <label>Pilih Nama Siswa</label>
+        <label>Nama Siswa</label>
         <select id="nama" onchange="isiNIS()">
             <option value="">-- Pilih Nama --</option>
         </select>
 
-        <label>NIS</label>
-        <input id="nis" readonly style="background:#f1f5f9">
+        <label>Nomor Induk Siswa (NIS)</label>
+        <input id="nis" readonly placeholder="Otomatis terisi..." tabindex="-1">
 
-        <label>Status Kondisi</label>
+        <label>Status Kondisi Siswa</label>
         <select id="status">
-            <option value="Baik">🟢 Baik / Normal</option>
-            <option value="Pembinaan">🟡 Perlu Pembinaan</option>
+            <option value="Baik">🟢 Kondisi Baik / Normal</option>
+            <option value="Pembinaan">🟡 Membutuhkan Pembinaan</option>
             <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
         </select>
 
-        <label>Detail Laporan (Catatan)</label>
-        <textarea id="catatan" rows="3"></textarea>
+        <label>Detail Laporan & Observasi</label>
+        <textarea id="catatan" rows="3" placeholder="Ceritakan detail perkembangan siswa..."></textarea>
 
-        <label>Tindak Lanjut</label>
-        <textarea id="tindakLanjut" rows="2" placeholder="Apa tindakan yang dilakukan?"></textarea>
+        <label>Rencana Tindak Lanjut</label>
+        <textarea id="tindakLanjut" rows="2" placeholder="Langkah konkret selanjutnya..."></textarea>
 
-        <button id="btnSimpan" onclick="simpan()">Simpan Laporan</button>
-        <button onclick="location.reload()" style="background:#64748b; margin-top:10px">Keluar</button>
+        <button id="btnSimpan" class="btn btn-primary" onclick="simpan()">
+            🚀 Simpan Laporan
+        </button>
+        <button class="btn btn-secondary" onclick="location.reload()">
+            Keluar Akun
+        </button>
     </div>
 </div>
 
@@ -71,10 +257,10 @@
         const pass = document.getElementById('loginPass').value;
         const btn = document.getElementById('btnLogin');
 
-        if(!email || !pass) return alert("Isi email dan password!");
+        if(!email || !pass) return alert("Silakan lengkapi email dan password!");
         
         btn.disabled = true;
-        btn.textContent = "Verifikasi...";
+        btn.innerHTML = "Memverifikasi...";
 
         try {
             const resp = await fetch(API_URL, {
@@ -87,26 +273,34 @@
                 currentUser = res.email;
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainForm').classList.remove('hidden');
-                document.getElementById('userInfo').innerText = "Login sebagai: " + currentUser;
+                document.getElementById('userInfo').innerText = "📧 Akun: " + currentUser;
                 loadSiswa();
             } else {
-                alert(res.msg);
+                alert("Gagal: " + res.msg);
                 btn.disabled = false;
-                btn.textContent = "Masuk";
+                btn.innerHTML = "Masuk ke Sistem";
             }
-        } catch (e) { alert("Error login!"); btn.disabled = false; }
+        } catch (e) { 
+            alert("Terjadi kesalahan koneksi!"); 
+            btn.disabled = false; 
+            btn.innerHTML = "Masuk ke Sistem";
+        }
     }
 
     async function loadSiswa() {
-        const resp = await fetch(API_URL + "?action=getSiswa");
-        dataSiswa = await resp.json();
-        const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
-        const selectKelas = document.getElementById('kelas');
-        listKelas.forEach(kls => {
-            const opt = document.createElement('option');
-            opt.value = kls; opt.textContent = kls;
-            selectKelas.appendChild(opt);
-        });
+        try {
+            const resp = await fetch(API_URL + "?action=getSiswa");
+            dataSiswa = await resp.json();
+            const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
+            const selectKelas = document.getElementById('kelas');
+            listKelas.forEach(kls => {
+                const opt = document.createElement('option');
+                opt.value = kls; opt.textContent = kls;
+                selectKelas.appendChild(opt);
+            });
+        } catch (e) {
+            alert("Gagal memuat data siswa!");
+        }
     }
 
     function updateDaftarNama() {
@@ -139,19 +333,22 @@
             kelas: document.getElementById('kelas').value
         };
 
-        if(!payload.nama || !payload.catatan) return alert("Lengkapi data!");
+        if(!payload.nama || !payload.catatan) return alert("Mohon lengkapi detail laporan!");
 
         btn.disabled = true;
-        btn.textContent = "Menyimpan...";
+        btn.innerHTML = "Sedang Mengirim...";
 
         try {
             await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("✅ Laporan Berhasil Disimpan!");
+            alert("✅ Laporan Perwalian Berhasil Disimpan!");
             document.getElementById('catatan').value = "";
             document.getElementById('tindakLanjut').value = "";
-        } catch (e) { alert("Error!"); }
-        btn.disabled = false;
-        btn.textContent = "Simpan Laporan";
+        } catch (e) { 
+            alert("Gagal menyimpan laporan!"); 
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = "🚀 Simpan Laporan";
+        }
     }
 </script>
 </body>
