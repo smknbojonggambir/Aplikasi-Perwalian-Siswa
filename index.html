@@ -1,264 +1,340 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Perwalian Digital</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #4361ee; --bg: #f0f4f8; --white: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: auto; } /* Lebar container ditambah sedikit */
-        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .hidden { display: none; }
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 15px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; }
-        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.8rem; }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 15px; }
-        .btn-primary { background: var(--primary); color: white; }
-        
-        /* Table Styles Updated */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: left; vertical-align: top; }
-        th { background: #f8fafc; font-weight: 700; color: #333; }
-        
-        .badge-bk { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
-        
-        /* Status Colors */
-        .status-baik { color: green; font-weight: bold; }
-        .status-pembinaan { color: orange; font-weight: bold; }
-        .status-khusus { color: red; font-weight: bold; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Perwalian Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #4361ee; --bg: #f0f4f8; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; } /* Lebar container ditambah sedikit */
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .hidden { display: none; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 15px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.8rem; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        .btn-primary { background: var(--primary); color: white; }
+        
+        /* Table Styles Updated */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; font-weight: 700; color: #333; }
+        
+        .badge-bk { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
+        
+        /* Status Colors */
+        .status-baik { color: green; font-weight: bold; }
+        .status-pembinaan { color: orange; font-weight: bold; }
+        .status-khusus { color: red; font-weight: bold; }
 
-        @media print { .no-print { display: none; } }
-    </style>
+        @media print { .no-print { display: none; } }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="card">
-        <div id="loginSection">
-            <h2 style="text-align:center">Login Sistem Perwalian</h2>
-            <input type="email" id="loginEmail" placeholder="Email">
-            <input type="password" id="loginPass" placeholder="Password">
-            <button class="btn btn-primary" onclick="login()">Masuk</button>
-        </div>
+    <div class="card">
+        <div id="loginSection">
+            <h2 style="text-align:center">Login Sistem Perwalian</h2>
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPass" placeholder="Password">
+            <button class="btn btn-primary" onclick="login()">Masuk</button>
+        </div>
 
-        <div id="mainApp" class="hidden">
-            <div id="userInfo" style="font-size: 0.8rem; color: #666; margin-bottom: 10px;"></div>
-            
-            <div class="nav-tabs no-print">
-                <button class="tab-btn active" id="tabIn" onclick="switchTab('input')">Input Laporan</button>
-                <button class="tab-btn" id="tabRep" onclick="switchTab('report')">Laporan & Riwayat</button>
-                <button class="tab-btn" onclick="location.reload()" style="color:red">Logout</button>
-            </div>
+        <div id="mainApp" class="hidden">
+            <div id="userInfo" style="font-size: 0.8rem; color: #666; margin-bottom: 10px;"></div>
+            
+            <div class="nav-tabs no-print">
+                <button class="tab-btn active" id="tabIn" onclick="switchTab('input')">Input Laporan</button>
+                <button class="tab-btn" id="tabRep" onclick="switchTab('report')">Laporan & Riwayat</button>
+                <button class="tab-btn" onclick="location.reload()" style="color:red">Logout</button>
+            </div>
 
-            <div id="tabInput">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label>Kelas</label>
-                        <select id="kelas" onchange="updateDaftarNama()"></select>
-                    </div>
-                    <div>
-                        <label>Nama Siswa</label>
-                        <select id="nama" onchange="isiNIS()"></select>
-                    </div>
-                </div>
+            <div id="tabInput">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>Kelas</label>
+                        <select id="kelas" onchange="updateDaftarNama()"></select>
+                    </div>
+                    <div>
+                        <label>Nama Siswa</label>
+                        <select id="nama" onchange="isiNIS()"></select>
+                    </div>
+                </div>
 
-                <label>NIS</label>
-                <input id="nis" readonly style="background:#f9f9f9">
+                <label>NIS</label>
+                <input id="nis" readonly style="background:#f9f9f9">
 
-                <label>Status</label>
-                <select id="status">
-                    <option value="Baik">🟢 Baik</option>
-                    <option value="Pembinaan">🟡 Pembinaan</option>
-                    <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
-                </select>
+                <label>Status</label>
+                <select id="status">
+                    <option value="Baik">🟢 Baik</option>
+                    <option value="Pembinaan">🟡 Pembinaan</option>
+                    <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
+                </select>
 
-                <label>Catatan Wali Kelas (Permasalahan/Prestasi)</label>
-                <textarea id="catatan" rows="3" placeholder="Tuliskan catatan kejadian..."></textarea>
+                <label>Catatan Wali Kelas (Permasalahan/Prestasi)</label>
+                <textarea id="catatan" rows="3" placeholder="Tuliskan catatan kejadian..."></textarea>
 
-                <label>Tindak Lanjut / Solusi</label>
-                <textarea id="tindakLanjut" rows="2" placeholder="Langkah yang sudah/akan diambil..."></textarea>
+                <label>Tindak Lanjut / Solusi</label>
+                <textarea id="tindakLanjut" rows="2" placeholder="Langkah yang sudah/akan diambil..."></textarea>
 
-                <button class="btn btn-primary" id="btnSimpan" onclick="simpan()">Simpan Data</button>
-            </div>
+                <button class="btn btn-primary" id="btnSimpan" onclick="simpan()">Simpan Data</button>
+            </div>
 
-            <div id="tabReport" class="hidden">
-                <div class="no-print">
-                    <input type="text" id="cari" onkeyup="filterTabel()" placeholder="Cari nama atau kelas...">
-                    <button onclick="window.print()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#333; color:white; border:none; border-radius:5px;">🖨️ Cetak / PDF</button>
-                </div>
-                <table id="tabelRiwayat">
-                    <thead>
-                        <tr>
-                            <th style="width: 10%">Tanggal</th>
-                            <th style="width: 10%">Kelas & Nama</th>
-                            <th style="width: 10%">Status</th>
-                            <th style="width: 30%">Catatan Wali Kelas</th>
-                            <th style="width: 25%">Tindak Lanjut</th> <th style="width: 15%">Pelapor</th>
-                        </tr>
-                    </thead>
-                    <tbody id="riwayatBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+            <div id="tabReport" class="hidden">
+                <div class="no-print">
+                    <input type="text" id="cari" onkeyup="filterTabel()" placeholder="Cari nama atau kelas...">
+                    <button onclick="window.print()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#333; color:white; border:none; border-radius:5px;">🖨️ Cetak / PDF</button>
+                </div>
+                <table id="tabelRiwayat">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%">Tanggal</th>
+                            <th style="width: 10%">Kelas & Nama</th>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 30%">Catatan Wali Kelas</th>
+                            <th style="width: 25%">Tindak Lanjut</th> <th style="width: 15%">Pelapor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riwayatBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyTjmavDuJRe97fWhI5mWzmNNpN1k1qJ4C4MjK4l4uat8bP67mjhRSbR-bMOTJk9Wv2/exec";
-    let dataSiswa = [];
-    let user = {};
+    const API_URL = "https://script.google.com/macros/s/AKfycbyTjmavDuJRe97fWhI5mWzmNNpN1k1qJ4C4MjK4l4uat8bP67mjhRSbR-bMOTJk9Wv2/exec";
+    let dataSiswa = [];
+    let user = {};
 
-    async function login() {
-        const email = document.getElementById('loginEmail').value;
-        const pass = document.getElementById('loginPass').value;
-        if(!email || !pass) return alert("Harap isi email dan password");
-        
-        const btn = document.querySelector('#loginSection button');
-        btn.innerText = "Loading..."; btn.disabled = true;
+    async function login() {
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPass').value;
+        if(!email || !pass) return alert("Harap isi email dan password");
+        
+        const btn = document.querySelector('#loginSection button');
+        btn.innerText = "Loading..."; btn.disabled = true;
 
-        try {
-            const resp = await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({ action: "login", email: email, password: pass })
-            });
-            const res = await resp.json();
-            
-            if(res.status === "success") {
-                user = res;
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('userInfo').innerHTML = `👤 <b>${user.role}</b> | ${user.email} ${user.role === 'Wali' ? '| Kelas: '+user.adminKelas : ''}`;
-                loadSiswa();
-            } else { 
-                alert(res.msg); 
-            }
-        } catch(e) { alert("Gagal koneksi server"); }
-        
-        btn.innerText = "Masuk"; btn.disabled = false;
-    }
+        try {
+            const resp = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "login", email: email, password: pass })
+            });
+            const res = await resp.json();
+            
+            if(res.status === "success") {
+                user = res;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userInfo').innerHTML = `👤 <b>${user.role}</b> | ${user.email} ${user.role === 'Wali' ? '| Kelas: '+user.adminKelas : ''}`;
+                loadSiswa();
+            } else { 
+                alert(res.msg); 
+            }
+        } catch(e) { alert("Gagal koneksi server"); }
+        
+        btn.innerText = "Masuk"; btn.disabled = false;
+    }
 
-    async function loadSiswa() {
-        const resp = await fetch(API_URL + "?action=getSiswa");
-        dataSiswa = await resp.json();
-        const selectKelas = document.getElementById('kelas');
-        
-        let listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
-        if(user.role === "Wali") {
-            listKelas = listKelas.filter(k => k === user.adminKelas);
-        }
-        
-        selectKelas.innerHTML = '<option value="">-- Pilih --</option>';
-        listKelas.sort().forEach(k => {
-            selectKelas.innerHTML += `<option value="${k}">${k}</option>`;
-        });
-    }
+    async function loadSiswa() {
+        const resp = await fetch(API_URL + "?action=getSiswa");
+        dataSiswa = await resp.json();
+        const selectKelas = document.getElementById('kelas');
+        
+        let listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
+        if(user.role === "Wali") {
+            listKelas = listKelas.filter(k => k === user.adminKelas);
+        }
+        
+        selectKelas.innerHTML = '<option value="">-- Pilih --</option>';
+        listKelas.sort().forEach(k => {
+            selectKelas.innerHTML += `<option value="${k}">${k}</option>`;
+        });
+    }
 
-    function updateDaftarNama() {
-        const kls = document.getElementById('kelas').value;
-        const selectNama = document.getElementById('nama');
-        selectNama.innerHTML = '<option value="">-- Pilih --</option>';
-        dataSiswa.filter(s => s.kelas === kls).forEach(s => {
-            selectNama.innerHTML += `<option value="${s.nama}">${s.nama}</option>`;
-        });
-    }
+    function updateDaftarNama() {
+        const kls = document.getElementById('kelas').value;
+        const selectNama = document.getElementById('nama');
+        selectNama.innerHTML = '<option value="">-- Pilih --</option>';
+        dataSiswa.filter(s => s.kelas === kls).forEach(s => {
+            selectNama.innerHTML += `<option value="${s.nama}">${s.nama}</option>`;
+        });
+    }
 
-    function isiNIS() {
-        const nm = document.getElementById('nama').value;
-        const s = dataSiswa.find(x => x.nama === nm);
-        document.getElementById('nis').value = s ? s.nis : "";
-    }
+    function isiNIS() {
+        const nm = document.getElementById('nama').value;
+        const s = dataSiswa.find(x => x.nama === nm);
+        document.getElementById('nis').value = s ? s.nis : "";
+    }
 
-    function switchTab(t) {
-        document.getElementById('tabInput').classList.toggle('hidden', t !== 'input');
-        document.getElementById('tabReport').classList.toggle('hidden', t !== 'report');
-        document.getElementById('tabIn').classList.toggle('active', t === 'input');
-        document.getElementById('tabRep').classList.toggle('active', t === 'report');
-        if(t === 'report') loadRiwayat();
-    }
+    function switchTab(t) {
+        document.getElementById('tabInput').classList.toggle('hidden', t !== 'input');
+        document.getElementById('tabReport').classList.toggle('hidden', t !== 'report');
+        document.getElementById('tabIn').classList.toggle('active', t === 'input');
+        document.getElementById('tabRep').classList.toggle('active', t === 'report');
+        if(t === 'report') loadRiwayat();
+    }
 
-    async function loadRiwayat() {
-        const body = document.getElementById('riwayatBody');
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center">Mengambil data...</td></tr>';
-        
-        try {
-            const resp = await fetch(API_URL + "?action=getRiwayat");
-            let data = await resp.json();
+    async function loadRiwayat() {
+        const body = document.getElementById('riwayatBody');
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center">Mengambil data...</td></tr>';
+        
+        try {
+            const resp = await fetch(API_URL + "?action=getRiwayat");
+            let data = await resp.json();
 
-            // Filter Wali
-            if(user.role === "Wali") {
-                data = data.filter(r => r.kelas === user.adminKelas);
-            }
+            // Filter Wali
+            if(user.role === "Wali") {
+                data = data.filter(r => r.kelas === user.adminKelas);
+            }
 
-            // Sort berdasarkan tanggal terbaru
-            data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
+            // Sort berdasarkan tanggal terbaru
+            data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
 
-            body.innerHTML = "";
-            if(data.length === 0) {
-                body.innerHTML = '<tr><td colspan="6" style="text-align:center">Belum ada catatan.</td></tr>';
-                return;
-            }
+            body.innerHTML = "";
+            if(data.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center">Belum ada catatan.</td></tr>';
+                return;
+            }
 
-            data.forEach(r => {
-                let statusColor = "";
-                if(r.status === "Baik") statusColor = "status-baik";
-                else if(r.status === "Pembinaan") statusColor = "status-pembinaan";
-                else statusColor = "status-khusus";
+            data.forEach(r => {
+                let statusColor = "";
+                if(r.status === "Baik") statusColor = "status-baik";
+                else if(r.status === "Pembinaan") statusColor = "status-pembinaan";
+                else statusColor = "status-khusus";
 
-                // PERBAIKAN: Menampilkan Catatan DAN Tindak Lanjut
-                body.innerHTML += `<tr>
-                    <td><small>${r.tanggal.split('T')[0]}</small></td>
-                    <td><b>${r.nama}</b><br><small>${r.kelas}</small></td>
-                    <td><span class="${statusColor}">${r.status}</span></td>
-                    <td>${r.catatan}</td>
-                    <td style="background:#fdfdfd; font-style:italic;">${r.tindak_lanjut ? r.tindak_lanjut : '-'}</td>
-                    <td><small>${r.wali.split('@')[0]}</small> ${user.role === 'BK' ? '<span class="badge-bk">BK</span>' : ''}</td>
-                </tr>`;
-            });
-        } catch (e) {
-            body.innerHTML = '<tr><td colspan="6" style="color:red; text-align:center">Gagal memuat data.</td></tr>';
-        }
-    }
+                // PERBAIKAN: Menampilkan Catatan DAN Tindak Lanjut
+                body.innerHTML += `<tr>
+                    <td><small>${r.tanggal.split('T')[0]}</small></td>
+                    <td><b>${r.nama}</b><br><small>${r.kelas}</small></td>
+                    <td><span class="${statusColor}">${r.status}</span></td>
+                    <td>${r.catatan}</td>
+                    <td style="background:#fdfdfd; font-style:italic;">${r.tindak_lanjut ? r.tindak_lanjut : '-'}</td>
+                    <td><small>${r.wali.split('@')[0]}</small> ${user.role === 'BK' ? '<span class="badge-bk">BK</span>' : ''}</td>
+                </tr>`;
+            });
+        } catch (e) {
+            body.innerHTML = '<tr><td colspan="6" style="color:red; text-align:center">Gagal memuat data.</td></tr>';
+        }
+    }
 
-    async function simpan() {
-        const btn = document.getElementById('btnSimpan');
-        const payload = {
-            action: "simpan",
-            nis: document.getElementById('nis').value,
-            nama: document.getElementById('nama').value,
-            status: document.getElementById('status').value,
-            catatan: document.getElementById('catatan').value,
-            tindak_lanjut: document.getElementById('tindakLanjut').value,
-            wali: user.email,
-            kelas: document.getElementById('kelas').value
-        };
-        if(!payload.nama || !payload.catatan) return alert("Wajib isi Nama Siswa & Catatan!");
-        
-        btn.disabled = true; btn.innerText = "Menyimpan ke Server...";
-        
-        try {
-            await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-            alert("Data berhasil disimpan!");
-            document.getElementById('catatan').value = "";
-            document.getElementById('tindakLanjut').value = "";
-            switchTab('report'); // Otomatis pindah ke laporan setelah simpan
-        } catch(e) {
-            alert("Gagal menyimpan data.");
-        }
-        
-        btn.disabled = false; btn.innerText = "Simpan Data";
-    }
+    async function simpan() {
+        const btn = document.getElementById('btnSimpan');
+        const payload = {
+            action: "simpan",
+            nis: document.getElementById('nis').value,
+            nama: document.getElementById('nama').value,
+            status: document.getElementById('status').value,
+            catatan: document.getElementById('catatan').value,
+            tindak_lanjut: document.getElementById('tindakLanjut').value,
+            wali: user.email,
+            kelas: document.getElementById('kelas').value
+        };
+        if(!payload.nama || !payload.catatan) return alert("Wajib isi Nama Siswa & Catatan!");
+        
+        btn.disabled = true; btn.innerText = "Menyimpan ke Server...";
+        
+        try {
+            await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+            alert("Data berhasil disimpan!");
+            document.getElementById('catatan').value = "";
+            document.getElementById('tindakLanjut').value = "";
+            switchTab('report'); // Otomatis pindah ke laporan setelah simpan
+        } catch(e) {
+            alert("Gagal menyimpan data.");
+        }
+        
+        btn.disabled = false; btn.innerText = "Simpan Data";
+    }
 
-    function filterTabel() {
-        const val = document.getElementById('cari').value.toLowerCase();
-        const rows = document.querySelectorAll('#riwayatBody tr');
-        rows.forEach(r => {
-            r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
-        });
-    }
+    function filterTabel() {
+        const val = document.getElementById('cari').value.toLowerCase();
+        const rows = document.querySelectorAll('#riwayatBody tr');
+        rows.forEach(r => {
+            r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+    }
 </script>
 </body>
 </html>
+
+
+const SS_ID = "12cmg9LkEVVkj2dSzd8b1wZMza3zHfD71ZuUjoUeahdo";
+
+function doGet(e) {
+  const action = e.parameter.action;
+  const ss = SpreadsheetApp.openById(SS_ID);
+  
+  if (action === "getSiswa") {
+    const sheet = ss.getSheetByName("siswa");
+    const data = sheet.getDataRange().getValues();
+    const result = data.slice(1).map(r => ({ nis: r[0], nama: r[2], kelas: r[3] }));
+    return renderJson(result);
+  }
+
+  if (action === "getRiwayat") {
+    const sheet = ss.getSheetByName("perwalian");
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return renderJson([]);
+
+    const result = data.slice(1).map(r => ({
+      tanggal: r[0] ? Utilities.formatDate(new Date(r[0]), "GMT+7", "dd/MM/yyyy") : "-",
+      nis: r[1],
+      nama: r[2],
+      status: r[3],
+      catatan: r[4],
+      tindak_lanjut: r[5],
+      wali: r[6],
+      kelas: r[7]
+    }));
+    return renderJson(result.reverse());
+  }
+  return renderJson({error: "Action not found"});
+}
+
+function doPost(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SS_ID);
+    const data = JSON.parse(e.postData.contents);
+
+    if (data.action === "login") {
+      const sheet = ss.getSheetByName("users");
+      const users = sheet.getDataRange().getValues();
+      const user = users.find(r => r[0] === data.email && r[1].toString() === data.password.toString());
+      
+      if (user) {
+        return renderJson({ 
+          status: "success", 
+          email: user[0], 
+          role: user[2], // Wali atau BK
+          adminKelas: user[3] || "" // Kelas yang diampu jika wali
+        });
+      } else {
+        return renderJson({ status: "error", msg: "Login Gagal!" });
+      }
+    }
+
+    if (data.action === "simpan") {
+      const sheet = ss.getSheetByName("perwalian");
+      sheet.appendRow([
+        new Date(), data.nis, data.nama, data.status, 
+        data.catatan, data.tindak_lanjut, data.wali, data.kelas
+      ]);
+      return renderJson({ status: "success" });
+    }
+  } catch (err) {
+    return renderJson({ status: "error", msg: err.toString() });
+  }
+}
+
+function renderJson(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+Singkronkan
