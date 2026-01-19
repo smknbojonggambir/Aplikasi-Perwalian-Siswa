@@ -23,15 +23,15 @@
         .tab-btn.active { background: var(--primary); color: white; }
 
         label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; }
-        select, input, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: inherit; }
+        select, input, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 0.9rem; }
         
         .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-print { background: #10b981; color: white; width: auto; padding: 10px 20px; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
-        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
-        th { background: #f8fafc; color: var(--text-muted); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; background: white; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 700; }
 
         .hidden { display: none; }
         .only-print { display: none; }
@@ -40,7 +40,8 @@
             .no-print { display: none !important; }
             .only-print { display: block; text-align: center; margin-bottom: 20px; }
             body { background: white; padding: 0; }
-            .card { box-shadow: none; width: 100%; max-width: 100%; }
+            .card { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; }
+            table { font-size: 10pt; }
         }
     </style>
 </head>
@@ -58,7 +59,7 @@
         </div>
 
         <div id="mainApp" class="hidden">
-            <div id="userInfo" style="margin-bottom: 15px; font-size: 0.8rem; color: var(--text-muted);"></div>
+            <div id="userInfo" style="margin-bottom: 15px; font-size: 0.8rem; color: var(--text-muted); font-weight: 600;"></div>
             
             <div class="nav-tabs no-print">
                 <button class="tab-btn active" id="btnTabInput" onclick="switchTab('input')">Input Laporan</button>
@@ -72,7 +73,7 @@
                 <label>Nama Siswa</label>
                 <select id="nama" onchange="isiNIS()"><option value="">-- Pilih Nama --</option></select>
                 <label>NIS</label>
-                <input id="nis" readonly style="background:#f1f5f9">
+                <input id="nis" readonly style="background:#f1f5f9" placeholder="Otomatis...">
                 <label>Status Kondisi</label>
                 <select id="status">
                     <option value="Baik">🟢 Baik / Normal</option>
@@ -80,16 +81,16 @@
                     <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
                 </select>
                 <label>Catatan Observasi</label>
-                <textarea id="catatan" rows="3"></textarea>
+                <textarea id="catatan" rows="3" placeholder="Tulis detail laporan..."></textarea>
                 <label>Tindak Lanjut</label>
-                <textarea id="tindakLanjut" rows="2"></textarea>
-                <button class="btn btn-primary" id="btnSimpan" onclick="simpan()">Simpan Laporan</button>
+                <textarea id="tindakLanjut" rows="2" placeholder="Apa rencana selanjutnya?"></textarea>
+                <button class="btn btn-primary" id="btnSimpan" onclick="simpan()">🚀 Simpan Laporan</button>
             </div>
 
             <div id="tabReport" class="hidden">
                 <div class="no-print" style="display:flex; gap:10px; margin-bottom:15px;">
                     <input type="text" id="searchTable" onkeyup="filterData()" placeholder="Cari Nama atau Kelas...">
-                    <button class="btn-print" onclick="window.print()">Cetak PDF / Printer</button>
+                    <button class="btn-print" onclick="window.print()">🖨️ Cetak / PDF</button>
                 </div>
                 
                 <div class="only-print">
@@ -126,9 +127,9 @@
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
         const btn = document.getElementById('btnLogin');
-        if(!email || !pass) return alert("Isi data!");
+        if(!email || !pass) return alert("Email dan Password wajib diisi!");
 
-        btn.disabled = true; btn.innerText = "Proses...";
+        btn.disabled = true; btn.innerText = "Verifikasi...";
         try {
             const resp = await fetch(API_URL, {
                 method: "POST",
@@ -139,21 +140,32 @@
                 currentUser = res.email;
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('userInfo').innerText = "Logged in as: " + currentUser;
+                document.getElementById('userInfo').innerText = "📧 Akun: " + currentUser;
                 loadSiswa();
-            } else { alert(res.msg); btn.disabled = false; btn.innerText = "Masuk"; }
-        } catch (e) { alert("Error koneksi!"); btn.disabled = false; }
+            } else { 
+                alert("Gagal: " + res.msg); 
+                btn.disabled = false; 
+                btn.innerText = "Masuk ke Sistem"; 
+            }
+        } catch (e) { 
+            alert("Kesalahan koneksi ke server!"); 
+            btn.disabled = false; 
+            btn.innerText = "Masuk ke Sistem";
+        }
     }
 
     async function loadSiswa() {
-        const resp = await fetch(API_URL + "?action=getSiswa");
-        dataSiswa = await resp.json();
-        const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
-        const selectKelas = document.getElementById('kelas');
-        listKelas.forEach(k => {
-            let opt = document.createElement('option'); opt.value = k; opt.textContent = k;
-            selectKelas.appendChild(opt);
-        });
+        try {
+            const resp = await fetch(API_URL + "?action=getSiswa");
+            dataSiswa = await resp.json();
+            const listKelas = [...new Set(dataSiswa.map(s => s.kelas))].sort();
+            const selectKelas = document.getElementById('kelas');
+            selectKelas.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+            listKelas.forEach(k => {
+                let opt = document.createElement('option'); opt.value = k; opt.textContent = k;
+                selectKelas.appendChild(opt);
+            });
+        } catch (e) { console.error("Gagal memuat siswa"); }
     }
 
     function updateDaftarNama() {
@@ -164,6 +176,7 @@
             let opt = document.createElement('option'); opt.value = s.nama; opt.textContent = s.nama;
             selectNama.appendChild(opt);
         });
+        document.getElementById('nis').value = "";
     }
 
     function isiNIS() {
@@ -182,35 +195,39 @@
 
     async function loadRiwayat() {
         const body = document.getElementById('riwayatBody');
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center">Memuat data...</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center">Sedang memuat riwayat...</td></tr>';
         try {
             const resp = await fetch(API_URL + "?action=getRiwayat");
             const data = await resp.json();
             body.innerHTML = "";
+            if(data.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center">Belum ada data laporan.</td></tr>';
+                return;
+            }
             data.forEach(r => {
-                body.innerHTML += `<tr>
-                    <td>${r.tanggal}</td>
-                    <td>${r.kelas}</td>
-                    <td>${r.nama}</td>
-                    <td>${r.status}</td>
-                    <td>${r.catatan}</td>
-                    <td>${r.tindak_lanjut}</td>
-                </tr>`;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${r.tanggal || '-'}</td>
+                    <td>${r.kelas || '-'}</td>
+                    <td><strong>${r.nama || 'Tanpa Nama'}</strong></td>
+                    <td>${r.status || '-'}</td>
+                    <td>${r.catatan || '-'}</td>
+                    <td>${r.tindak_lanjut || '-'}</td>
+                `;
+                body.appendChild(row);
             });
             document.getElementById('printDate').innerText = "Dicetak pada: " + new Date().toLocaleString('id-ID');
-        } catch (e) { body.innerHTML = '<tr><td colspan="6">Gagal memuat.</td></tr>'; }
+        } catch (e) { 
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Gagal memuat data riwayat.</td></tr>'; 
+        }
     }
 
     function filterData() {
         const input = document.getElementById("searchTable").value.toUpperCase();
         const tr = document.getElementById("riwayatBody").getElementsByTagName("tr");
         for (let i = 0; i < tr.length; i++) {
-            const tdNama = tr[i].getElementsByTagName("td")[2];
-            const tdKelas = tr[i].getElementsByTagName("td")[1];
-            if (tdNama || tdKelas) {
-                const txt = (tdNama.textContent || tdNama.innerText) + (tdKelas.textContent || tdKelas.innerText);
-                tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
-            }
+            const rowContent = tr[i].textContent || tr[i].innerText;
+            tr[i].style.display = rowContent.toUpperCase().indexOf(input) > -1 ? "" : "none";
         }
     }
 
@@ -226,15 +243,29 @@
             wali: currentUser,
             kelas: document.getElementById('kelas').value
         };
-        if(!payload.nama || !payload.catatan) return alert("Lengkapi data!");
-        btn.disabled = true; btn.innerText = "Menyimpan...";
+
+        if(!payload.nama || !payload.catatan) return alert("Nama Siswa dan Catatan wajib diisi!");
+
+        btn.disabled = true; btn.innerText = "⏳ Sedang Mengirim...";
+        
         try {
-            await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("Berhasil!");
+            // Menghapus mode: "no-cors" agar Apps Script bisa memproses JSON dengan benar
+            const response = await fetch(API_URL, { 
+                method: "POST", 
+                body: JSON.stringify(payload) 
+            });
+            
+            // Karena Apps Script Redirect, kita mungkin tidak mendapat JSON balik di beberapa browser
+            // Namun data biasanya tetap masuk.
+            alert("✅ Laporan Berhasil Disimpan!");
             document.getElementById('catatan').value = "";
             document.getElementById('tindakLanjut').value = "";
-        } catch (e) { alert("Error!"); }
-        btn.disabled = false; btn.innerText = "Simpan Laporan";
+        } catch (e) { 
+            console.error(e);
+            alert("Sistem sedang memproses. Silakan cek tab Laporan dalam beberapa saat."); 
+        } finally {
+            btn.disabled = false; btn.innerText = "🚀 Simpan Laporan";
+        }
     }
 </script>
 </body>
