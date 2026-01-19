@@ -29,6 +29,39 @@
         .status-khusus { color: red; font-weight: bold; }
 
         @media print { .no-print { display: none; } }
+
+
+
+        /* Style untuk area tanda tangan */
+.signature-wrapper {
+    display: none; /* Sembunyi di aplikasi web */
+    margin-top: 30px;
+    justify-content: space-between;
+}
+
+.sig-box {
+    text-align: center;
+    width: 200px;
+}
+
+.sig-space {
+    height: 80px;
+}
+
+@media print {
+    .signature-wrapper {
+        display: flex; /* Muncul hanya saat cetak */
+    }
+    .no-print {
+        display: none !important;
+    }
+    body {
+        background: white;
+    }
+    .card {
+        box-shadow: none;
+    }
+}
     </style>
 </head>
 <body>
@@ -101,6 +134,21 @@
                     </thead>
                     <tbody id="riwayatBody"></tbody>
                 </table>
+                <div class="signature-wrapper">
+    <div class="sig-box">
+        <p>Mengetahui,</p>
+        <p><b>Guru BK</b></p>
+        <div class="sig-space"></div>
+        <p>__________________________</p>
+    </div>
+    
+    <div class="sig-box">
+        <p>Dibuat pada: <span id="printDate"></span></p>
+        <p><b>Wali Kelas</b></p>
+        <div class="sig-space"></div>
+        <p><b id="sigWaliName">__________________________</b></p>
+    </div>
+</div>
             </div>
         </div>
     </div>
