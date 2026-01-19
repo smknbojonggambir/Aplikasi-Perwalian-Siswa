@@ -1,67 +1,143 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Sistem Perwalian Siswa</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body{
-      font-family:Segoe UI, Arial, sans-serif;
-      background:#f1f2f6;
-      margin:0;
-    }
-    header{
-      background:#1e3799;
-      color:#fff;
-      padding:16px 20px;
-    }
-    header h1{margin:0;font-size:20px}
-    header p{margin:4px 0 0;font-size:13px}
+<meta charset="UTF-8">
+<title>Sistem Perwalian Siswa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    .container{max-width:1100px;margin:auto;padding:20px}
-    .card{
-      background:#fff;
-      border-radius:8px;
-      padding:20px;
-      box-shadow:0 2px 6px rgba(0,0,0,.08);
-      margin-bottom:20px
-    }
-    h3{margin-top:0}
+<style>
+:root{
+  --primary:#1e3799;
+  --bg:#f4f6fb;
+  --card:#ffffff;
+  --text:#2f3542;
+  --muted:#7f8c8d;
+  --success:#2ecc71;
+  --warning:#f39c12;
+  --danger:#e74c3c;
+}
 
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{padding:10px;border-bottom:1px solid #eee}
-    th{background:#dfe4ea;text-align:left}
-    tr:hover{background:#f8f9fa}
-    a{color:#1e3799;text-decoration:none;font-weight:600}
+*{box-sizing:border-box}
 
-    label{font-size:13px;font-weight:600}
-    input,select,textarea{
-      width:100%;
-      padding:8px;
-      margin-top:4px;
-      border:1px solid #ccc;
-      border-radius:4px
-    }
-    textarea{resize:vertical}
-    button{
-      background:#1e3799;
-      color:#fff;
-      border:none;
-      padding:10px 16px;
-      border-radius:6px;
-      cursor:pointer;
-      margin-top:10px
-    }
-    button:hover{opacity:.9}
+body{
+  margin:0;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
 
-    footer{text-align:center;font-size:12px;color:#777;padding:15px}
-  </style>
+header{
+  background:linear-gradient(135deg,#1e3799,#4a69bd);
+  color:#fff;
+  padding:20px;
+}
+
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px;opacity:.9}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  margin-bottom:20px;
+}
+
+h3{margin-top:0}
+
+label{
+  font-size:13px;
+  font-weight:600;
+  margin-top:10px;
+  display:block;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+}
+
+textarea{resize:vertical}
+
+button{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:14px;
+  font-weight:600;
+}
+
+button:hover{opacity:.92}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+
+th{
+  background:#f1f3f9;
+  text-align:left;
+}
+
+tr:hover{background:#fafbff}
+
+a{
+  color:var(--primary);
+  font-weight:600;
+  text-decoration:none;
+}
+
+.badge{
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  color:#fff;
+  font-weight:600;
+}
+
+.baik{background:var(--success)}
+.pembinaan{background:var(--warning)}
+.khusus{background:var(--danger)}
+
+footer{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  padding:16px;
+}
+
+.loading{
+  text-align:center;
+  font-size:13px;
+  color:var(--muted);
+}
+</style>
 </head>
+
 <body>
 
 <header>
   <h1>Sistem Perwalian Siswa</h1>
-  <p>Login Wali Kelas & BK | Google Sheet Backend</p>
+  <p>Wali Kelas & BK • Google Sheet Backend</p>
 </header>
 
 <div class="container">
@@ -70,16 +146,17 @@
 <div class="card" id="loginBox">
   <h3>Login Pengguna</h3>
   <label>Email</label>
-  <input id="email">
+  <input id="email" placeholder="nama@sekolah.sch.id">
   <label>Password</label>
-  <input id="password" type="password">
-  <button onclick="login()">Login</button>
+  <input id="password" type="password" placeholder="••••••••">
+  <button onclick="login()">Masuk Sistem</button>
+  <div class="loading" id="loginLoad" style="display:none">Memverifikasi...</div>
 </div>
 
 <!-- DASHBOARD -->
 <div class="card" id="dashboard" style="display:none">
-  <h3>Data Siswa</h3>
-  <table id="tabel">
+  <h3>Daftar Siswa</h3>
+  <table>
     <thead>
       <tr>
         <th>NIS</th>
@@ -88,87 +165,97 @@
         <th>Catatan</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tabel"></tbody>
   </table>
 </div>
 
 <!-- FORM -->
 <div class="card" id="formBox" style="display:none">
   <h3>Form Perwalian</h3>
+
   <label>Nama Siswa</label>
   <input id="nama" readonly>
 
   <label>Status Pembinaan</label>
   <select id="status">
-    <option>Baik</option>
-    <option>Pembinaan</option>
-    <option>Perhatian Khusus</option>
+    <option value="Baik">Baik</option>
+    <option value="Pembinaan">Pembinaan</option>
+    <option value="Perhatian Khusus">Perhatian Khusus</option>
   </select>
 
-  <label>Catatan Wali Kelas / BK</label>
+  <label>Catatan Wali / BK</label>
   <textarea id="catatan" rows="4"></textarea>
 
-  <button onclick="simpan()">Simpan Perwalian</button>
+  <button onclick="simpan()">Simpan Data</button>
 </div>
 
 </div>
 
 <footer>
-  © 2026 Sistem Perwalian Siswa | Frontend GitHub Pages
+© 2026 Sistem Perwalian Siswa • Frontend GitHub Pages
 </footer>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbx0JKgruxbT6DfYVzPukr5G2yIcn1gZzi5AZgL58i2JHaaowVHWYH4lG0Mw6W86unJqzA/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbx0JKgruxbT6DfYVzPukr5G2yIcn1gZzi5AZgL58i2JHaaowVHWYH4lG0Mw6W86unJqzA/exec";
 
-const siswa = [
-  {nis:"252610021",nama:"AI FITRI NURAENI"},
-  {nis:"252610022",nama:"ANWAR MUTAQIN"},
-  {nis:"252610023",nama:"AYYISY MAULIDA ISNAENI"},
-  {nis:"252610024",nama:"DEDE NURUL ALAMSAH"}
+const siswa=[
+ {nis:"252610021",nama:"AI FITRI NURAENI"},
+ {nis:"252610022",nama:"ANWAR MUTAQIN"},
+ {nis:"252610023",nama:"AYYISY MAULIDA ISNAENI"},
+ {nis:"252610024",nama:"DEDE NURUL ALAMSAH"}
 ];
 
-let aktif = null;
+let aktif=null;
 
 function login(){
+ loginLoad.style.display="block";
  fetch(API_URL,{
   method:"POST",
   body:JSON.stringify({
+    action:"login",
     email:email.value,
     password:password.value
   })
  }).then(r=>r.json()).then(res=>{
-  if(res.status=="success"){
+  loginLoad.style.display="none";
+  if(res.status==="success"){
     loginBox.style.display="none";
     dashboard.style.display="block";
     formBox.style.display="block";
     render();
-  } else alert("Login gagal");
+  }else alert("Login gagal");
  });
 }
 
+function badge(status){
+ if(status==="Baik")return `<span class="badge baik">Baik</span>`;
+ if(status==="Pembinaan")return `<span class="badge pembinaan">Pembinaan</span>`;
+ if(status==="Perhatian Khusus")return `<span class="badge khusus">Khusus</span>`;
+ return "-";
+}
+
 function render(){
- const tb=document.querySelector('#tabel tbody');
- tb.innerHTML='';
+ tabel.innerHTML="";
  siswa.forEach((s,i)=>{
-  const tr=document.createElement('tr');
+  const tr=document.createElement("tr");
   tr.innerHTML=`
-   <td>${s.nis}</td>
-   <td><a href="#" onclick="pilih(${i})">${s.nama}</a></td>
-   <td>${s.status||'-'}</td>
-   <td>${s.catatan||'-'}</td>`;
-  tb.appendChild(tr);
+    <td>${s.nis}</td>
+    <td><a href="#" onclick="pilih(${i})">${s.nama}</a></td>
+    <td>${badge(s.status)}</td>
+    <td>${s.catatan||"-"}</td>`;
+  tabel.appendChild(tr);
  });
 }
 
 function pilih(i){
  aktif=i;
  nama.value=siswa[i].nama;
- status.value=siswa[i].status||'Baik';
- catatan.value=siswa[i].catatan||'';
+ status.value=siswa[i].status||"Baik";
+ catatan.value=siswa[i].catatan||"";
 }
 
 function simpan(){
- if(aktif===null){alert('Pilih siswa');return;}
+ if(aktif===null){alert("Pilih siswa");return;}
  siswa[aktif].status=status.value;
  siswa[aktif].catatan=catatan.value;
 
@@ -184,7 +271,7 @@ function simpan(){
  });
 
  render();
- alert('Data tersimpan');
+ alert("Data perwalian tersimpan");
 }
 </script>
 
