@@ -8,20 +8,29 @@
     <style>
         :root { --primary: #4361ee; --bg: #f0f4f8; --white: #ffffff; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; }
+        .container { max-width: 1100px; margin: auto; } /* Lebar container ditambah sedikit */
         .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .hidden { display: none; }
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
         .tab-btn { padding: 10px 15px; border: none; background: none; cursor: pointer; font-weight: 600; color: #666; }
         .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.8rem; }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 15px; }
         .btn-primary { background: var(--primary); color: white; }
+        
+        /* Table Styles Updated */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
-        th { background: #f8fafc; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: left; vertical-align: top; }
+        th { background: #f8fafc; font-weight: 700; color: #333; }
+        
         .badge-bk { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
+        
+        /* Status Colors */
+        .status-baik { color: green; font-weight: bold; }
+        .status-pembinaan { color: orange; font-weight: bold; }
+        .status-khusus { color: red; font-weight: bold; }
+
         @media print { .no-print { display: none; } }
     </style>
 </head>
@@ -46,39 +55,49 @@
             </div>
 
             <div id="tabInput">
-                <label>Kelas</label>
-                <select id="kelas" onchange="updateDaftarNama()"></select>
-                <label>Nama Siswa</label>
-                <select id="nama" onchange="isiNIS()"></select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>Kelas</label>
+                        <select id="kelas" onchange="updateDaftarNama()"></select>
+                    </div>
+                    <div>
+                        <label>Nama Siswa</label>
+                        <select id="nama" onchange="isiNIS()"></select>
+                    </div>
+                </div>
+
                 <label>NIS</label>
                 <input id="nis" readonly style="background:#f9f9f9">
+
                 <label>Status</label>
                 <select id="status">
                     <option value="Baik">🟢 Baik</option>
                     <option value="Pembinaan">🟡 Pembinaan</option>
                     <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
                 </select>
-                <label>Catatan</label>
-                <textarea id="catatan" rows="3"></textarea>
-                <label>Tindak Lanjut</label>
-                <textarea id="tindakLanjut" rows="2"></textarea>
+
+                <label>Catatan Wali Kelas (Permasalahan/Prestasi)</label>
+                <textarea id="catatan" rows="3" placeholder="Tuliskan catatan kejadian..."></textarea>
+
+                <label>Tindak Lanjut / Solusi</label>
+                <textarea id="tindakLanjut" rows="2" placeholder="Langkah yang sudah/akan diambil..."></textarea>
+
                 <button class="btn btn-primary" id="btnSimpan" onclick="simpan()">Simpan Data</button>
             </div>
 
             <div id="tabReport" class="hidden">
                 <div class="no-print">
                     <input type="text" id="cari" onkeyup="filterTabel()" placeholder="Cari nama atau kelas...">
-                    <button onclick="window.print()" style="margin-top:10px; padding:5px 10px; cursor:pointer">Cetak ke PDF</button>
+                    <button onclick="window.print()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#333; color:white; border:none; border-radius:5px;">🖨️ Cetak / PDF</button>
                 </div>
                 <table id="tabelRiwayat">
                     <thead>
                         <tr>
-                            <th>Tanggal</th>
-                            <th>Kelas</th>
-                            <th>Nama</th>
-                            <th>Status</th>
-                            <th>Catatan</th>
-                            <th>Oleh</th>
+                            <th style="width: 10%">Tanggal</th>
+                            <th style="width: 10%">Kelas & Nama</th>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 30%">Catatan Wali Kelas</th>
+                            <th style="width: 25%">Tindak Lanjut</th> <th style="width: 15%">Pelapor</th>
                         </tr>
                     </thead>
                     <tbody id="riwayatBody"></tbody>
@@ -96,18 +115,30 @@
     async function login() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
-        const resp = await fetch(API_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "login", email: email, password: pass })
-        });
-        const res = await resp.json();
-        if(res.status === "success") {
-            user = res;
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-            document.getElementById('userInfo').innerHTML = `👤 <b>${user.role}</b> | ${user.email} ${user.role === 'Wali' ? '| Kelas: '+user.adminKelas : ''}`;
-            loadSiswa();
-        } else { alert(res.msg); }
+        if(!email || !pass) return alert("Harap isi email dan password");
+        
+        const btn = document.querySelector('#loginSection button');
+        btn.innerText = "Loading..."; btn.disabled = true;
+
+        try {
+            const resp = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "login", email: email, password: pass })
+            });
+            const res = await resp.json();
+            
+            if(res.status === "success") {
+                user = res;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userInfo').innerHTML = `👤 <b>${user.role}</b> | ${user.email} ${user.role === 'Wali' ? '| Kelas: '+user.adminKelas : ''}`;
+                loadSiswa();
+            } else { 
+                alert(res.msg); 
+            }
+        } catch(e) { alert("Gagal koneksi server"); }
+        
+        btn.innerText = "Masuk"; btn.disabled = false;
     }
 
     async function loadSiswa() {
@@ -115,7 +146,6 @@
         dataSiswa = await resp.json();
         const selectKelas = document.getElementById('kelas');
         
-        // Fitur Wali: Hanya tampilkan kelasnya. Fitur BK: Tampilkan semua.
         let listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
         if(user.role === "Wali") {
             listKelas = listKelas.filter(k => k === user.adminKelas);
@@ -152,26 +182,45 @@
 
     async function loadRiwayat() {
         const body = document.getElementById('riwayatBody');
-        body.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
-        const resp = await fetch(API_URL + "?action=getRiwayat");
-        let data = await resp.json();
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center">Mengambil data...</td></tr>';
+        
+        try {
+            const resp = await fetch(API_URL + "?action=getRiwayat");
+            let data = await resp.json();
 
-        // Fitur Filter: Wali hanya lihat kelasnya, BK lihat semua
-        if(user.role === "Wali") {
-            data = data.filter(r => r.kelas === user.adminKelas);
+            // Filter Wali
+            if(user.role === "Wali") {
+                data = data.filter(r => r.kelas === user.adminKelas);
+            }
+
+            // Sort berdasarkan tanggal terbaru
+            data.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            body.innerHTML = "";
+            if(data.length === 0) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center">Belum ada catatan.</td></tr>';
+                return;
+            }
+
+            data.forEach(r => {
+                let statusColor = "";
+                if(r.status === "Baik") statusColor = "status-baik";
+                else if(r.status === "Pembinaan") statusColor = "status-pembinaan";
+                else statusColor = "status-khusus";
+
+                // PERBAIKAN: Menampilkan Catatan DAN Tindak Lanjut
+                body.innerHTML += `<tr>
+                    <td><small>${r.tanggal.split('T')[0]}</small></td>
+                    <td><b>${r.nama}</b><br><small>${r.kelas}</small></td>
+                    <td><span class="${statusColor}">${r.status}</span></td>
+                    <td>${r.catatan}</td>
+                    <td style="background:#fdfdfd; font-style:italic;">${r.tindak_lanjut ? r.tindak_lanjut : '-'}</td>
+                    <td><small>${r.wali.split('@')[0]}</small> ${user.role === 'BK' ? '<span class="badge-bk">BK</span>' : ''}</td>
+                </tr>`;
+            });
+        } catch (e) {
+            body.innerHTML = '<tr><td colspan="6" style="color:red; text-align:center">Gagal memuat data.</td></tr>';
         }
-
-        body.innerHTML = "";
-        data.forEach(r => {
-            body.innerHTML += `<tr>
-                <td>${r.tanggal}</td>
-                <td>${r.kelas}</td>
-                <td>${r.nama}</td>
-                <td>${r.status}</td>
-                <td>${r.catatan}</td>
-                <td>${r.wali.split('@')[0]} ${user.role === 'BK' ? '<span class="badge-bk">BK</span>' : ''}</td>
-            </tr>`;
-        });
     }
 
     async function simpan() {
@@ -186,13 +235,21 @@
             wali: user.email,
             kelas: document.getElementById('kelas').value
         };
-        if(!payload.nama || !payload.catatan) return alert("Isi Nama & Catatan!");
+        if(!payload.nama || !payload.catatan) return alert("Wajib isi Nama Siswa & Catatan!");
         
-        btn.disabled = true; btn.innerText = "Menyimpan...";
-        await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-        alert("Berhasil!");
+        btn.disabled = true; btn.innerText = "Menyimpan ke Server...";
+        
+        try {
+            await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+            alert("Data berhasil disimpan!");
+            document.getElementById('catatan').value = "";
+            document.getElementById('tindakLanjut').value = "";
+            switchTab('report'); // Otomatis pindah ke laporan setelah simpan
+        } catch(e) {
+            alert("Gagal menyimpan data.");
+        }
+        
         btn.disabled = false; btn.innerText = "Simpan Data";
-        document.getElementById('catatan').value = "";
     }
 
     function filterTabel() {
