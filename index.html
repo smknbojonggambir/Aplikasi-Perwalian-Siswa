@@ -2,114 +2,212 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Aplikasi Perwalian Siswa</title>
+  <title>Aplikasi Perwalian Siswa – Profesional</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; background:#f5f6fa; margin:20px; }
-    h1 { margin-bottom:10px; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    th, td { border:1px solid #ddd; padding:8px; font-size:14px; }
-    th { background:#2f3640; color:#fff; }
-    tr:nth-child(even){ background:#f2f2f2; }
-    .container { max-width:1100px; margin:auto; }
-    .card { background:#fff; padding:15px; margin-top:20px; border-radius:6px; box-shadow:0 2px 5px rgba(0,0,0,.1); }
-    label { display:block; margin-top:10px; font-weight:bold; }
-    input, textarea { width:100%; padding:8px; margin-top:5px; }
-    button { margin-top:10px; padding:8px 12px; border:none; background:#0984e3; color:#fff; cursor:pointer; border-radius:4px; }
-    button:hover { background:#74b9ff; }
+    :root{
+      --primary:#1e3799;
+      --secondary:#f1f2f6;
+      --text:#2f3542;
+    }
+    body{
+      font-family:"Segoe UI", Arial, sans-serif;
+      background:var(--secondary);
+      color:var(--text);
+      margin:0;
+      padding:20px;
+    }
+    .container{
+      max-width:1200px;
+      margin:auto;
+    }
+    header{
+      background:var(--primary);
+      color:#fff;
+      padding:20px;
+      border-radius:8px;
+      margin-bottom:20px;
+    }
+    header h1{ margin:0; font-size:22px; }
+    header p{ margin:5px 0 0; font-size:14px; }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      border-radius:8px;
+      overflow:hidden;
+      font-size:14px;
+    }
+    th,td{
+      padding:10px;
+      border-bottom:1px solid #eee;
+    }
+    th{
+      background:#dfe4ea;
+      text-align:left;
+    }
+    tr:hover{ background:#f8f9fa; }
+    a{ color:var(--primary); text-decoration:none; font-weight:600; }
+
+    .card{
+      background:#fff;
+      padding:20px;
+      border-radius:8px;
+      margin-top:20px;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+    label{ font-size:13px; font-weight:600; }
+    input, textarea, select{
+      width:100%;
+      padding:8px;
+      margin-top:5px;
+      border:1px solid #ccc;
+      border-radius:4px;
+      font-size:14px;
+    }
+    textarea{ resize:vertical; }
+    button{
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      padding:10px 16px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:14px;
+      margin-top:10px;
+    }
+    button:hover{ opacity:.9; }
+    footer{
+      margin-top:30px;
+      text-align:center;
+      font-size:12px;
+      color:#666;
+    }
   </style>
 </head>
 <body>
 <div class="container">
+
+<header>
   <h1>Aplikasi Perwalian Siswa</h1>
-  <p>Data perwalian siswa (contoh aplikasi sederhana)</p>
+  <p>Administrasi perwalian & pembinaan siswa – versi profesional</p>
+</header>
 
-  <table id="tabelSiswa">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Nama Siswa</th>
-        <th>NISN</th>
-        <th>NIS</th>
-        <th>Catatan Wali</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<table id="tabelSiswa">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Nama Siswa</th>
+      <th>NISN</th>
+      <th>NIS</th>
+      <th>Status</th>
+      <th>Catatan Singkat</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
 
-  <div class="card">
-    <h3>Form Catatan Perwalian</h3>
-    <label>Nama Siswa</label>
-    <input type="text" id="nama" readonly />
-
-    <label>Catatan Wali Kelas</label>
-    <textarea id="catatan" rows="4"></textarea>
-
-    <button onclick="simpanCatatan()">Simpan Catatan</button>
+<div class="card">
+  <h3>Form Perwalian Siswa</h3>
+  <div class="grid">
+    <div>
+      <label>Nama Siswa</label>
+      <input type="text" id="nama" readonly>
+    </div>
+    <div>
+      <label>Status Pembinaan</label>
+      <select id="status">
+        <option value="Baik">Baik</option>
+        <option value="Pembinaan">Perlu Pembinaan</option>
+        <option value="Perhatian">Perlu Perhatian Khusus</option>
+      </select>
+    </div>
   </div>
+
+  <label>Catatan Lengkap Wali Kelas</label>
+  <textarea id="catatan" rows="4"></textarea>
+
+  <label>Tindak Lanjut</label>
+  <textarea id="tindaklanjut" rows="3"></textarea>
+
+  <button onclick="simpan()">Simpan Data Perwalian</button>
+</div>
+
+<footer>
+  © 2026 – Aplikasi Perwalian Siswa | Digunakan untuk administrasi sekolah
+</footer>
 </div>
 
 <script>
-  const siswa = [
-    {no:1,nama:"AI FITRI NURAENI",nisn:"0096668362",nis:"252610021",catatan:""},
-    {no:2,nama:"ANWAR MUTAQIN",nisn:"0082090856",nis:"252610022",catatan:""},
-    {no:3,nama:"AYYISY MAULIDA ISNAENI",nisn:"0091398794",nis:"252610023",catatan:""},
-    {no:4,nama:"Dede Nurul Alamsah",nisn:"0092302205",nis:"252610024",catatan:""},
-    {no:5,nama:"Fahmi Kurniansyah",nisn:"0109380488",nis:"252610025",catatan:""},
-    {no:6,nama:"FAIZ KURNIAWAN",nisn:"0097566149",nis:"252610026",catatan:""},
-    {no:7,nama:"FITRAH RIZKI RAMADON",nisn:"0083830690",nis:"252610027",catatan:""},
-    {no:8,nama:"ILFAH SADIATUL UMAH",nisn:"0106383999",nis:"252610028",catatan:""},
-    {no:9,nama:"KARIN NURA'ENI",nisn:"0102021500",nis:"252610030",catatan:""},
-    {no:10,nama:"LUTVI ABDUL JABAR",nisn:"0091021955",nis:"252610032",catatan:""},
-    {no:11,nama:"M H RISKI",nisn:"0105944251",nis:"252610034",catatan:""},
-    {no:12,nama:"M PARHAN MAULANA",nisn:"0091099684",nis:"252610033",catatan:""},
-    {no:13,nama:"PAKHRI KIRMAN",nisn:"0091869216",nis:"252610036",catatan:""},
-    {no:14,nama:"PURNAMA MAULIDAN",nisn:"0101074623",nis:"252610037",catatan:""},
-    {no:15,nama:"RAMA RADILA PUTRA",nisn:"0094851532",nis:"252610038",catatan:""},
-    {no:16,nama:"RANGGA ANUARI LESMANA",nisn:"0107077457",nis:"252610039",catatan:""},
-    {no:17,nama:"RAYNALDY RAFTANSYAH",nisn:"0093709866",nis:"252610040",catatan:""},
-    {no:18,nama:"Rikza Dzilfikri",nisn:"0099689828",nis:"252610041",catatan:""},
-    {no:19,nama:"RISA FADILA",nisn:"0104171921",nis:"252610042",catatan:""},
-    {no:20,nama:"RIZKI ABDUL ROJAK",nisn:"0096420510",nis:"252610043",catatan:""},
-    {no:21,nama:"SITI NAFISA",nisn:"0097047227",nis:"252610045",catatan:""},
-    {no:22,nama:"WENDI",nisn:"0095681312",nis:"252610046",catatan:""}
-  ];
+const siswa=[
+ {no:1,nama:"AI FITRI NURAENI",nisn:"0096668362",nis:"252610021"},
+ {no:2,nama:"ANWAR MUTAQIN",nisn:"0082090856",nis:"252610022"},
+ {no:3,nama:"AYYISY MAULIDA ISNAENI",nisn:"0091398794",nis:"252610023"},
+ {no:4,nama:"Dede Nurul Alamsah",nisn:"0092302205",nis:"252610024"},
+ {no:5,nama:"Fahmi Kurniansyah",nisn:"0109380488",nis:"252610025"},
+ {no:6,nama:"FAIZ KURNIAWAN",nisn:"0097566149",nis:"252610026"},
+ {no:7,nama:"FITRAH RIZKI RAMADON",nisn:"0083830690",nis:"252610027"},
+ {no:8,nama:"ILFAH SADIATUL UMAH",nisn:"0106383999",nis:"252610028"},
+ {no:9,nama:"KARIN NURA'ENI",nisn:"0102021500",nis:"252610030"},
+ {no:10,nama:"LUTVI ABDUL JABAR",nisn:"0091021955",nis:"252610032"},
+ {no:11,nama:"M H RISKI",nisn:"0105944251",nis:"252610034"},
+ {no:12,nama:"M PARHAN MAULANA",nisn:"0091099684",nis:"252610033"},
+ {no:13,nama:"PAKHRI KIRMAN",nisn:"0091869216",nis:"252610036"},
+ {no:14,nama:"PURNAMA MAULIDAN",nisn:"0101074623",nis:"252610037"},
+ {no:15,nama:"RAMA RADILA PUTRA",nisn:"0094851532",nis:"252610038"},
+ {no:16,nama:"RANGGA ANUARI LESMANA",nisn:"0107077457",nis:"252610039"},
+ {no:17,nama:"RAYNALDY RAFTANSYAH",nisn:"0093709866",nis:"252610040"},
+ {no:18,nama:"Rikza Dzilfikri",nisn:"0099689828",nis:"252610041"},
+ {no:19,nama:"RISA FADILA",nisn:"0104171921",nis:"252610042"},
+ {no:20,nama:"RIZKI ABDUL ROJAK",nisn:"0096420510",nis:"252610043"},
+ {no:21,nama:"SITI NAFISA",nisn:"0097047227",nis:"252610045"},
+ {no:22,nama:"WENDI",nisn:"0095681312",nis:"252610046"}
+];
 
-  let indexAktif = null;
+let aktif=null;
 
-  function renderTable() {
-    const tbody = document.querySelector('#tabelSiswa tbody');
-    tbody.innerHTML = '';
-    siswa.forEach((s, i) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${s.no}</td>
-        <td><a href="#" onclick="pilih(${i})">${s.nama}</a></td>
-        <td>${s.nisn}</td>
-        <td>${s.nis}</td>
-        <td>${s.catatan || '-'}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+function render(){
+ const tb=document.querySelector('#tabelSiswa tbody');
+ tb.innerHTML='';
+ siswa.forEach((s,i)=>{
+  s.status=s.status||'-';
+  s.catatan=s.catatan||'-';
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+   <td>${s.no}</td>
+   <td><a href="#" onclick="pilih(${i})">${s.nama}</a></td>
+   <td>${s.nisn}</td>
+   <td>${s.nis}</td>
+   <td>${s.status}</td>
+   <td>${s.catatan}</td>`;
+  tb.appendChild(tr);
+ });
+}
 
-  function pilih(i) {
-    indexAktif = i;
-    document.getElementById('nama').value = siswa[i].nama;
-    document.getElementById('catatan').value = siswa[i].catatan;
-  }
+function pilih(i){
+ aktif=i;
+ document.getElementById('nama').value=siswa[i].nama;
+ document.getElementById('status').value=siswa[i].status||'Baik';
+ document.getElementById('catatan').value=siswa[i].catatan||'';
+ document.getElementById('tindaklanjut').value=siswa[i].tindaklanjut||'';
+}
 
-  function simpanCatatan() {
-    if(indexAktif === null) {
-      alert('Pilih siswa terlebih dahulu');
-      return;
-    }
-    siswa[indexAktif].catatan = document.getElementById('catatan').value;
-    renderTable();
-    alert('Catatan perwalian tersimpan');
-  }
+function simpan(){
+ if(aktif===null){ alert('Pilih siswa terlebih dahulu'); return; }
+ siswa[aktif].status=document.getElementById('status').value;
+ siswa[aktif].catatan=document.getElementById('catatan').value;
+ siswa[aktif].tindaklanjut=document.getElementById('tindaklanjut').value;
+ render();
+ alert('Data perwalian berhasil disimpan');
+}
 
-  renderTable();
+render();
 </script>
 </body>
 </html>
