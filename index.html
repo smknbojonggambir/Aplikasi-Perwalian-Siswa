@@ -3,150 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Perwalian Siswa v2.0</title>
+    <title>Sistem Perwalian Modern v2.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4361ee;
             --primary-dark: #3a0ca3;
-            --bg: #f8f9fc;
-            --card: #ffffff;
-            --text-main: #2b2d42;
-            --text-muted: #8d99ae;
             --success: #06d6a0;
             --warning: #ffd166;
             --danger: #ef476f;
-            --border: #edf2f4;
+            --bg: #f4f7fe;
+            --text: #2b2d42;
+            --border: #e2e8f0;
         }
 
-        * { box-sizing: border-box; transition: all 0.2s ease; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); }
 
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text-main);
-            line-height: 1.6;
-        }
-
-        /* Header */
         header {
-            background: var(--primary);
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
+            color: white;
             padding: 40px 20px;
             text-align: center;
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        header h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
-        header p { margin: 8px 0 0; font-size: 14px; opacity: 0.8; }
+        .container { max-width: 900px; margin: -30px auto 50px; padding: 0 15px; }
 
-        .container {
-            max-width: 900px;
-            margin: -30px auto 40px;
-            padding: 0 20px;
-        }
-
-        /* Card System */
         .card {
-            background: var(--card);
+            background: white;
+            padding: 25px;
             border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
             border: 1px solid var(--border);
         }
 
-        h3 { margin-top: 0; font-size: 18px; color: var(--primary-dark); border-left: 4px solid var(--primary); padding-left: 12px; }
+        h3 { margin-top: 0; font-size: 20px; color: var(--primary-dark); }
 
-        /* Form Elements */
-        label { font-size: 13px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        /* Form Styling */
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #64748b; }
         input, select, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            font-family: inherit;
+            width: 100%; padding: 12px; margin-bottom: 18px;
+            border: 2px solid var(--border); border-radius: 10px;
+            font-size: 14px; outline: none; transition: 0.2s;
         }
-
         input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-        input[readonly] { background: #f1f3f9; border-color: transparent; cursor: not-allowed; }
+        input[readonly] { background: #f8fafc; cursor: not-allowed; }
 
         button {
-            width: 100%;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            width: 100%; background: var(--primary); color: white;
+            border: none; padding: 15px; border-radius: 10px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
         }
+        button:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4); }
-        button:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
-
-        /* Table Responsive */
-        .table-wrapper { overflow-x: auto; margin-top: 15px; }
+        /* Table Styling */
+        .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { text-align: left; font-size: 12px; text-transform: uppercase; color: var(--text-muted); padding: 12px; border-bottom: 2px solid var(--border); }
-        td { padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        
-        tr:last-child td { border: none; }
-        tr:hover td { background: #fcfdfe; }
-
-        .name-link { color: var(--primary); font-weight: 600; text-decoration: none; cursor: pointer; }
-        .name-link:hover { text-decoration: underline; }
+        th { text-align: left; padding: 12px; font-size: 12px; text-transform: uppercase; color: #94a3b8; border-bottom: 2px solid var(--border); }
+        td { padding: 15px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
 
         /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .baik { background: #e6fffa; color: #00a388; }
-        .pembinaan { background: #fffaf0; color: #b7791f; }
-        .khusus { background: #fff5f5; color: #e53e3e; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+        .baik { background: #dcfce7; color: #166534; }
+        .pembinaan { background: #fef9c3; color: #854d0e; }
+        .khusus { background: #fee2e2; color: #991b1b; }
 
-        footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
+        .loading-overlay { display: none; text-align: center; color: var(--primary); font-weight: 600; }
 
-        /* Utils */
-        .hidden { display: none; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        footer { text-align: center; color: #94a3b8; font-size: 12px; padding: 20px; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Sistem Perwalian Siswa</h1>
-    <p>Monitoring & Laporan Berkala Siswa</p>
+    <p>Manajemen Bimbingan & Konseling Digital</p>
 </header>
 
 <div class="container">
     <div class="card" id="loginBox">
-        <h3>Portal Masuk</h3>
+        <h3>Login Petugas</h3>
         <label>Email Sekolah</label>
-        <input id="email" type="email" placeholder="contoh@sekolah.sch.id">
+        <input id="email" type="email" placeholder="admin@sekolah.sch.id">
         <label>Kata Sandi</label>
         <input id="password" type="password" placeholder="••••••••">
-        <button id="btnLogin" onclick="login()">Masuk ke Sistem</button>
+        <button onclick="login()">Masuk ke Sistem</button>
     </div>
 
-    <div id="mainContent" class="hidden">
+    <div id="mainContent" style="display:none">
         <div class="card">
-            <h3>Daftar Peserta Didik</h3>
+            <h3>Update Laporan Siswa</h3>
+            <div id="formSection">
+                <label>Pilih Kelas</label>
+                <select id="f_kelas" onchange="updateDropdownNama()">
+                    <option value="">-- Pilih Kelas --</option>
+                    <option value="10-A">Kelas 10-A</option>
+                    <option value="10-B">Kelas 10-B</option>
+                    <option value="11-A">Kelas 11-A</option>
+                </select>
+
+                <label>Pilih Nama Siswa</label>
+                <select id="f_nama" onchange="autoFillNIS()">
+                    <option value="">-- Pilih Nama --</option>
+                </select>
+
+                <label>Nomor Induk Siswa (NIS)</label>
+                <input id="f_nis" readonly placeholder="Terisi otomatis">
+
+                <label>Status Pembinaan</label>
+                <select id="f_status">
+                    <option value="Baik">🟢 Kondisi Baik</option>
+                    <option value="Pembinaan">🟡 Perlu Pembinaan</option>
+                    <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
+                </select>
+
+                <label>Catatan Observasi</label>
+                <textarea id="f_catatan" rows="3" placeholder="Tulis catatan perkembangan siswa di sini..."></textarea>
+
+                <button id="btnSimpan" onclick="simpanData()">Simpan Data ke Cloud</button>
+                <div id="loader" class="loading-overlay">Sedang mengirim data...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Riwayat Laporan</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -154,132 +138,114 @@
                             <th>NIS</th>
                             <th>Nama Siswa</th>
                             <th>Status</th>
-                            <th>Catatan Terakhir</th>
+                            <th>Kelas</th>
                         </tr>
                     </thead>
                     <tbody id="tabelSiswa"></tbody>
                 </table>
             </div>
         </div>
-
-        <div class="card" id="formBox">
-            <h3>Update Perkembangan Siswa</h3>
-            <label>Nama Siswa (Terpilih)</label>
-            <input id="f_nama" readonly placeholder="Klik nama di tabel">
-            
-            <label>Status Kondisi</label>
-            <select id="f_status">
-                <option value="Baik">🟢 Baik / Normal</option>
-                <option value="Pembinaan">🟡 Perlu Pembinaan</option>
-                <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
-            </select>
-
-            <label>Detail Laporan</label>
-            <textarea id="f_catatan" rows="3" placeholder="Tuliskan detail observasi..."></textarea>
-
-            <button id="btnSimpan" onclick="simpan()">
-                <span id="btnText">Update Laporan</span>
-            </button>
-        </div>
     </div>
 </div>
 
-<footer>
-    &copy; 2026 Admin Sekolah • Digital Perwalian System
-</footer>
+<footer>&copy; 2026 Digital School System</footer>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxkY8ht7F55fOJRInzVnTHQyDRfUqvlluFG6cyrZz03xgEagv53-Si2H1TEKhpKNykpXA/exec"; // Ganti dengan URL Google Script Anda
+    // GANTI DENGAN URL WEB APP ANDA
+    const API_URL = "https://script.google.com/macros/s/AKfycbx0JKgruxbT6DfYVzPukr5G2yIcn1gZzi5AZgL58i2JHaaowVHWYH4lG0Mw6W86unJqzA/exec";
 
-    let dataSiswa = [
-        {nis:"252610021", nama:"AI FITRI NURAENI", status: "Baik", catatan: "-"},
-        {nis:"252610022", nama:"ANWAR MUTAQIN", status: "Baik", catatan: "-"},
-        {nis:"252610023", nama:"AYYISY MAULIDA ISNAENI", status: "Baik", catatan: "-"},
-        {nis:"252610024", nama:"DEDE NURUL ALAMSAH", status: "Baik", catatan: "-"}
+    const databaseSiswa = [
+        {nis:"252610021", nama:"AI FITRI NURAENI", kelas:"10-A"},
+        {nis:"252610022", nama:"ANWAR MUTAQIN", kelas:"10-A"},
+        {nis:"252610023", nama:"AYYISY MAULIDA ISNAENI", kelas:"10-B"},
+        {nis:"252610024", nama:"DEDE NURUL ALAMSAH", kelas:"11-A"}
     ];
 
-    let indeksAktif = null;
+    let riwayatData = [];
 
     function login() {
-        const btn = document.getElementById('btnLogin');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Memverifikasi...';
+        // Simulasi Login sederhana
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        renderTable();
+    }
 
-        // Simulasi Fetch ke Apps Script
-        setTimeout(() => {
-            document.getElementById('loginBox').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            renderTable();
-        }, 1500);
+    function updateDropdownNama() {
+        const kelas = document.getElementById('f_kelas').value;
+        const selNama = document.getElementById('f_nama');
+        selNama.innerHTML = '<option value="">-- Pilih Nama --</option>';
+        
+        const filtered = databaseSiswa.filter(s => s.kelas === kelas);
+        filtered.forEach(s => {
+            let opt = document.createElement('option');
+            opt.value = s.nama;
+            opt.text = s.nama;
+            selNama.appendChild(opt);
+        });
+        document.getElementById('f_nis').value = "";
+    }
+
+    function autoFillNIS() {
+        const nama = document.getElementById('f_nama').value;
+        const siswa = databaseSiswa.find(s => s.nama === nama);
+        if(siswa) document.getElementById('f_nis').value = siswa.nis;
     }
 
     function renderTable() {
         const tbody = document.getElementById('tabelSiswa');
-        tbody.innerHTML = "";
+        tbody.innerHTML = riwayatData.length ? "" : "<tr><td colspan='4' style='text-align:center'>Belum ada data tersimpan</td></tr>";
         
-        dataSiswa.forEach((s, i) => {
-            const tr = document.createElement("tr");
-            const statusClass = s.status === "Baik" ? "baik" : (s.status === "Pembinaan" ? "pembinaan" : "khusus");
-            
+        riwayatData.forEach(d => {
+            const tr = document.createElement('tr');
+            const sClass = d.status === "Baik" ? "baik" : (d.status === "Pembinaan" ? "pembinaan" : "khusus");
             tr.innerHTML = `
-                <td>${s.nis}</td>
-                <td><span class="name-link" onclick="pilihSiswa(${i})">${s.nama}</span></td>
-                <td><span class="badge ${statusClass}">${s.status}</span></td>
-                <td style="color:var(--text-muted); font-size:12px">${s.catatan}</td>
+                <td>${d.nis}</td>
+                <td><strong>${d.nama}</strong></td>
+                <td><span class="badge ${sClass}">${d.status}</span></td>
+                <td>${d.kelas}</td>
             `;
-            tbody.appendChild(tr);
+            tbody.prepend(tr);
         });
     }
 
-    function pilihSiswa(i) {
-        indeksAktif = i;
-        document.getElementById('f_nama').value = dataSiswa[i].nama;
-        document.getElementById('f_status').value = dataSiswa[i].status;
-        document.getElementById('f_catatan').value = dataSiswa[i].catatan === "-" ? "" : dataSiswa[i].catatan;
-        
-        // Scroll otomatis ke form pada mobile
-        document.getElementById('formBox').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    async function simpan() {
-        if(indeksAktif === null) return alert("Silakan pilih siswa dari tabel terlebih dahulu!");
-
+    async function simpanData() {
         const btn = document.getElementById('btnSimpan');
-        const btnText = document.getElementById('btnText');
+        const loader = document.getElementById('loader');
         
-        btn.disabled = true;
-        btnText.innerHTML = '<span class="loader"></span> Mengirim ke Server...';
-
-        const payload = {
+        const data = {
             action: "simpan",
-            nis: dataSiswa[indeksAktif].nis,
+            nis: document.getElementById('f_nis').value,
             nama: document.getElementById('f_nama').value,
+            kelas: document.getElementById('f_kelas').value,
             status: document.getElementById('f_status').value,
             catatan: document.getElementById('f_catatan').value
         };
 
-        try {
-            // Update UI Lokal
-            dataSiswa[indeksAktif].status = payload.status;
-            dataSiswa[indeksAktif].catatan = payload.catatan;
+        if(!data.nama || !data.catatan) return alert("Lengkapi data terlebih dahulu!");
 
-            // Kirim ke Google Sheets
+        btn.disabled = true;
+        loader.style.display = "block";
+
+        try {
             await fetch(API_URL, {
                 method: "POST",
-                mode: "no-cors", // Penting untuk Apps Script jika tidak setting CORS
-                body: JSON.stringify(payload)
+                mode: "no-cors",
+                body: JSON.stringify(data)
             });
 
+            riwayatData.push(data);
             renderTable();
-            alert("✅ Laporan berhasil diperbarui!");
-        } catch (err) {
-            alert("Terjadi kesalahan saat menyimpan.");
+            alert("Data Berhasil Disimpan!");
+            
+            // Reset Form
+            document.getElementById('f_catatan').value = "";
+        } catch (e) {
+            alert("Gagal menyimpan data ke Google Sheets.");
         } finally {
             btn.disabled = false;
-            btnText.innerText = "Update Laporan";
+            loader.style.display = "none";
         }
     }
 </script>
-
 </body>
 </html>
