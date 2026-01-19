@@ -3,138 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perwalian Modern v3.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Sistem Perwalian Otomatis</title>
     <style>
-        :root { --p: #4361ee; --bg: #f8f9fc; --txt: #2b2d42; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 20px; }
-        .card { max-width: 500px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        header { text-align: center; margin-bottom: 30px; }
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #64748b; }
-        select, input, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #edf2f7; border-radius: 12px; font-size: 15px; outline: none; box-sizing: border-box; }
-        select:focus, textarea:focus { border-color: var(--p); }
-        button { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 16px; }
-        button:disabled { background: #cbd5e1; }
-        .loading { text-align: center; font-size: 12px; color: var(--p); display: none; }
+        :root { --primary: #4361ee; --bg: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); padding: 20px; color: #334155; }
+        .card { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; }
+        select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; margin-top: 20px; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #94a3b8; }
+        #loading { text-align: center; font-size: 14px; color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
 
-<header>
-    <h2 style="margin:0; color:var(--p)">Form Perwalian</h2>
-    <p style="color:#64748b; font-size:14px">Pilih kelas untuk memunculkan nama siswa</p>
-</header>
-
 <div class="card">
-    <div id="loadData" style="text-align:center; padding:10px;">Memuat data siswa...</div>
-    
-    <div id="mainForm" style="display:none">
+    <h2 style="margin-top:0; color:var(--primary)">Form Perwalian</h2>
+    <div id="loading">Memuat Data dari Google Sheet...</div>
+
+    <div id="formBody" style="display:none">
         <label>Pilih Kelas</label>
-        <select id="f_kelas" onchange="filterNama()">
+        <select id="kelas" onchange="updateDaftarNama()">
             <option value="">-- Pilih Kelas --</option>
         </select>
 
         <label>Pilih Nama Siswa</label>
-        <select id="f_nama" onchange="getNIS()">
+        <select id="nama" onchange="isiNIS()">
             <option value="">-- Pilih Nama --</option>
         </select>
 
         <label>NIS</label>
-        <input id="f_nis" readonly placeholder="Terisi otomatis">
+        <input id="nis" readonly style="background:#f1f5f9">
 
         <label>Status Kondisi</label>
-        <select id="f_status">
+        <select id="status">
             <option value="Baik">🟢 Baik / Normal</option>
             <option value="Pembinaan">🟡 Perlu Pembinaan</option>
             <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
         </select>
 
         <label>Detail Laporan</label>
-        <textarea id="f_catatan" rows="4" placeholder="Tuliskan laporan perwalian..."></textarea>
+        <textarea id="catatan" rows="4"></textarea>
 
-        <button id="btnSimpan" onclick="kirimData()">Simpan Data</button>
-        <div id="statusMsg" class="loading">Mengirim laporan...</div>
+        <button id="btnSimpan" onclick="simpan()">Simpan Laporan</button>
     </div>
 </div>
 
 <script>
-    const API_URL = "URL_WEB_APP_ANDA"; // Masukkan URL Deployment Google Script
-    let masterSiswa = [];
+    const API_URL = "URL_WEB_APP_ANDA"; // Ganti dengan URL dari Deploy Apps Script
+    let dataSiswa = [];
 
-    // 1. AMBIL DATA DARI GOOGLE SHEET SAAT LOAD
+    // 1. Ambil data dari Google Sheet saat aplikasi dibuka
     window.onload = async () => {
         try {
             const resp = await fetch(API_URL);
-            masterSiswa = await resp.json();
+            dataSiswa = await resp.json();
             
-            // Isi Dropdown Kelas unik
-            const daftarKelas = [...new Set(masterSiswa.map(s => s.kelas))];
-            const selKelas = document.getElementById('f_kelas');
-            daftarKelas.forEach(kls => {
-                selKelas.innerHTML += `<option value="${kls}">${kls}</option>`;
+            // Ekstrak Kelas Unik
+            const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
+            const selectKelas = document.getElementById('kelas');
+            
+            listKelas.forEach(kls => {
+                const opt = document.createElement('option');
+                opt.value = kls;
+                opt.textContent = kls;
+                selectKelas.appendChild(opt);
             });
 
-            document.getElementById('loadData').style.display = 'none';
-            document.getElementById('mainForm').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('formBody').style.display = 'block';
         } catch (e) {
-            document.getElementById('loadData').innerText = "Gagal memuat data. Periksa API URL.";
+            document.getElementById('loading').innerHTML = "❌ Gagal memuat data. Periksa API_URL.";
         }
     };
 
-    // 2. FILTER NAMA BERDASARKAN KELAS
-    function filterNama() {
-        const kelas = document.getElementById('f_kelas').value;
-        const selNama = document.getElementById('f_nama');
-        selNama.innerHTML = '<option value="">-- Pilih Nama --</option>';
+    // 2. Filter Nama berdasarkan Kelas yang dipilih
+    function updateDaftarNama() {
+        const kls = document.getElementById('kelas').value;
+        const selectNama = document.getElementById('nama');
+        selectNama.innerHTML = '<option value="">-- Pilih Nama --</option>';
         
-        const filtered = masterSiswa.filter(s => s.kelas === kelas);
+        const filtered = dataSiswa.filter(s => s.kelas === kls);
         filtered.forEach(s => {
-            selNama.innerHTML += `<option value="${s.nama}">${s.nama}</option>`;
+            const opt = document.createElement('option');
+            opt.value = s.nama;
+            opt.textContent = s.nama;
+            selectNama.appendChild(opt);
         });
-        document.getElementById('f_nis').value = "";
+        document.getElementById('nis').value = "";
     }
 
-    // 3. AUTO NIS
-    function getNIS() {
-        const nama = document.getElementById('f_nama').value;
-        const siswa = masterSiswa.find(s => s.nama === nama);
-        document.getElementById('f_nis').value = siswa ? siswa.nis : "";
+    // 3. Isi NIS otomatis saat Nama dipilih
+    function isiNIS() {
+        const nm = document.getElementById('nama').value;
+        const siswa = dataSiswa.find(s => s.nama === nm);
+        document.getElementById('nis').value = siswa ? siswa.nis : "";
     }
 
-    // 4. KIRIM DATA KE SHEET
-    async function kirimData() {
+    // 4. Kirim Data
+    async function simpan() {
         const btn = document.getElementById('btnSimpan');
-        const loader = document.getElementById('statusMsg');
-        
-        const data = {
-            nis: document.getElementById('f_nis').value,
-            nama: document.getElementById('f_nama').value,
-            kelas: document.getElementById('f_kelas').value,
-            status: document.getElementById('f_status').value,
-            catatan: document.getElementById('f_catatan').value
+        const payload = {
+            nis: document.getElementById('nis').value,
+            nama: document.getElementById('nama').value,
+            kelas: document.getElementById('kelas').value,
+            status: document.getElementById('status').value,
+            catatan: document.getElementById('catatan').value
         };
 
-        if(!data.nama || !data.catatan) return alert("Lengkapi data!");
+        if (!payload.nama || !payload.catatan) return alert("Mohon lengkapi data!");
 
         btn.disabled = true;
-        loader.style.display = 'block';
+        btn.textContent = "Mengirim...";
 
         try {
             await fetch(API_URL, {
                 method: "POST",
                 mode: "no-cors",
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             });
             alert("✅ Laporan Berhasil Disimpan!");
-            document.getElementById('f_catatan').value = "";
+            document.getElementById('catatan').value = "";
         } catch (e) {
             alert("Terjadi kesalahan.");
         } finally {
             btn.disabled = false;
-            loader.style.display = 'none';
+            btn.textContent = "Simpan Laporan";
         }
     }
 </script>
-
 </body>
 </html>
