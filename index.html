@@ -3,252 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Perwalian Otomatis</title>
+    <title>Sistem Perwalian Digital</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-hover: #3751d4;
-            --bg: #f0f4f8;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --white: #ffffff;
-            --error: #ef4444;
-            --success: #10b981;
+            --primary: #4361ee; --primary-hover: #3751d4;
+            --bg: #f0f4f8; --text-main: #1e293b;
+            --text-muted: #64748b; --white: #ffffff;
         }
 
-        * {
-            box-sizing: border-box;
-            transition: all 0.2s ease-in-out;
-        }
+        * { box-sizing: border-box; transition: all 0.2s; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 20px; }
+        
+        .container { max-width: 900px; margin: auto; }
+        .card { background: var(--white); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: none; font-weight: 600; cursor: pointer; color: var(--text-muted); border-radius: 8px; }
+        .tab-btn.active { background: var(--primary); color: white; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at top right, #e2e8f0 0%, transparent 40%);
-            padding: 40px 20px;
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; }
+        select, input, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-family: inherit; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-print { background: #10b981; color: white; width: auto; padding: 10px 20px; }
 
-        .card {
-            width: 100%;
-            max-width: 480px;
-            background: var(--white);
-            padding: 35px;
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        th { background: #f8fafc; color: var(--text-muted); }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .hidden { display: none; }
+        .only-print { display: none; }
 
-        .header h2 {
-            margin: 0;
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.75rem;
-            letter-spacing: -0.025em;
-        }
-
-        .header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
-
-        label {
-            display: block;
-            margin-top: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        select, input, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            color: var(--text-main);
-            background-color: #f8fafc;
-        }
-
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background-color: var(--white);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            margin-top: 25px;
-            box-shadow: 0 4px 6px -1px rgba(67, 97, 238, 0.3);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(67, 97, 238, 0.4);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-muted);
-            margin-top: 12px;
-            font-size: 0.85rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .btn-secondary:hover {
-            background: #f1f5f9;
-            color: var(--text-main);
-        }
-
-        .btn:disabled {
-            background: #cbd5e1;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        #userInfo {
-            font-size: 0.75rem;
-            background: #f1f5f9;
-            padding: 8px 12px;
-            border-radius: 20px;
-            color: var(--text-muted);
-            display: inline-block;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .input-group {
-            position: relative;
-        }
-
-        /* Status colors */
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Animation for appearance */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #mainForm, #loginSection {
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .footer-credit {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
+        @media print {
+            .no-print { display: none !important; }
+            .only-print { display: block; text-align: center; margin-bottom: 20px; }
+            body { background: white; padding: 0; }
+            .card { box-shadow: none; width: 100%; max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="header">
-        <h2>Sistem Perwalian</h2>
-        <p>SMK Digital Management System</p>
-    </div>
-    
-    <div id="loginSection">
-        <div class="input-group">
-            <label>Email Institusi</label>
-            <input type="email" id="loginEmail" placeholder="nama@smk.sch.id">
-        </div>
-        <div class="input-group">
-            <label>Kata Sandi</label>
+<div class="container">
+    <div class="card">
+        <div id="loginSection">
+            <h2 style="text-align:center; color:var(--primary)">Login Wali / BK</h2>
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="wali@smk.sch.id">
+            <label>Password</label>
             <input type="password" id="loginPass" placeholder="••••••••">
-        </div>
-        <button id="btnLogin" class="btn btn-primary" onclick="login()">
-            Masuk ke Sistem
-        </button>
-    </div>
-
-    <div id="mainForm" class="hidden">
-        <div style="text-align: center;">
-            <div id="userInfo"></div>
+            <button class="btn btn-primary" id="btnLogin" onclick="login()">Masuk ke Sistem</button>
         </div>
 
-        <label>Unit / Kelas</label>
-        <select id="kelas" onchange="updateDaftarNama()">
-            <option value="">-- Pilih Kelas --</option>
-        </select>
+        <div id="mainApp" class="hidden">
+            <div id="userInfo" style="margin-bottom: 15px; font-size: 0.8rem; color: var(--text-muted);"></div>
+            
+            <div class="nav-tabs no-print">
+                <button class="tab-btn active" id="btnTabInput" onclick="switchTab('input')">Input Laporan</button>
+                <button class="tab-btn" id="btnTabReport" onclick="switchTab('report')">Laporan & Cetak</button>
+                <button class="tab-btn" onclick="location.reload()" style="color:#ef4444">Keluar</button>
+            </div>
 
-        <label>Nama Siswa</label>
-        <select id="nama" onchange="isiNIS()">
-            <option value="">-- Pilih Nama --</option>
-        </select>
+            <div id="tabInput">
+                <label>Pilih Kelas</label>
+                <select id="kelas" onchange="updateDaftarNama()"><option value="">-- Pilih Kelas --</option></select>
+                <label>Nama Siswa</label>
+                <select id="nama" onchange="isiNIS()"><option value="">-- Pilih Nama --</option></select>
+                <label>NIS</label>
+                <input id="nis" readonly style="background:#f1f5f9">
+                <label>Status Kondisi</label>
+                <select id="status">
+                    <option value="Baik">🟢 Baik / Normal</option>
+                    <option value="Pembinaan">🟡 Perlu Pembinaan</option>
+                    <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
+                </select>
+                <label>Catatan Observasi</label>
+                <textarea id="catatan" rows="3"></textarea>
+                <label>Tindak Lanjut</label>
+                <textarea id="tindakLanjut" rows="2"></textarea>
+                <button class="btn btn-primary" id="btnSimpan" onclick="simpan()">Simpan Laporan</button>
+            </div>
 
-        <label>Nomor Induk Siswa (NIS)</label>
-        <input id="nis" readonly placeholder="Otomatis terisi..." tabindex="-1">
+            <div id="tabReport" class="hidden">
+                <div class="no-print" style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input type="text" id="searchTable" onkeyup="filterData()" placeholder="Cari Nama atau Kelas...">
+                    <button class="btn-print" onclick="window.print()">Cetak PDF / Printer</button>
+                </div>
+                
+                <div class="only-print">
+                    <h3>LAPORAN PERWALIAN SISWA</h3>
+                    <p id="printDate"></p>
+                </div>
 
-        <label>Status Kondisi Siswa</label>
-        <select id="status">
-            <option value="Baik">🟢 Kondisi Baik / Normal</option>
-            <option value="Pembinaan">🟡 Membutuhkan Pembinaan</option>
-            <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
-        </select>
-
-        <label>Detail Laporan & Observasi</label>
-        <textarea id="catatan" rows="3" placeholder="Ceritakan detail perkembangan siswa..."></textarea>
-
-        <label>Rencana Tindak Lanjut</label>
-        <textarea id="tindakLanjut" rows="2" placeholder="Langkah konkret selanjutnya..."></textarea>
-
-        <button id="btnSimpan" class="btn btn-primary" onclick="simpan()">
-            🚀 Simpan Laporan
-        </button>
-        <button class="btn btn-secondary" onclick="location.reload()">
-            Keluar Akun
-        </button>
+                <div style="overflow-x: auto;">
+                    <table id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Kelas</th>
+                                <th>Nama</th>
+                                <th>Status</th>
+                                <th>Catatan</th>
+                                <th>Tindak Lanjut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riwayatBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbz3gWP4kbrngRtIUc_H5t_fnC3S7K8xeBJeP7al4hMYUfSf9sOhYoqYNZvcF1FEbQ_45A/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwWzwbKXgSa5agI-1qo3qB4-XIKBKL1wlWNoGPMer5r6ACWaxdWn79qzEw6uekorZKRlA/exec";
     let dataSiswa = [];
     let currentUser = "";
 
@@ -256,51 +126,34 @@
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
         const btn = document.getElementById('btnLogin');
+        if(!email || !pass) return alert("Isi data!");
 
-        if(!email || !pass) return alert("Silakan lengkapi email dan password!");
-        
-        btn.disabled = true;
-        btn.innerHTML = "Memverifikasi...";
-
+        btn.disabled = true; btn.innerText = "Proses...";
         try {
             const resp = await fetch(API_URL, {
                 method: "POST",
                 body: JSON.stringify({ action: "login", email: email, password: pass })
             });
             const res = await resp.json();
-
             if(res.status === "success") {
                 currentUser = res.email;
                 document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainForm').classList.remove('hidden');
-                document.getElementById('userInfo').innerText = "📧 Akun: " + currentUser;
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userInfo').innerText = "Logged in as: " + currentUser;
                 loadSiswa();
-            } else {
-                alert("Gagal: " + res.msg);
-                btn.disabled = false;
-                btn.innerHTML = "Masuk ke Sistem";
-            }
-        } catch (e) { 
-            alert("Terjadi kesalahan koneksi!"); 
-            btn.disabled = false; 
-            btn.innerHTML = "Masuk ke Sistem";
-        }
+            } else { alert(res.msg); btn.disabled = false; btn.innerText = "Masuk"; }
+        } catch (e) { alert("Error koneksi!"); btn.disabled = false; }
     }
 
     async function loadSiswa() {
-        try {
-            const resp = await fetch(API_URL + "?action=getSiswa");
-            dataSiswa = await resp.json();
-            const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
-            const selectKelas = document.getElementById('kelas');
-            listKelas.forEach(kls => {
-                const opt = document.createElement('option');
-                opt.value = kls; opt.textContent = kls;
-                selectKelas.appendChild(opt);
-            });
-        } catch (e) {
-            alert("Gagal memuat data siswa!");
-        }
+        const resp = await fetch(API_URL + "?action=getSiswa");
+        dataSiswa = await resp.json();
+        const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
+        const selectKelas = document.getElementById('kelas');
+        listKelas.forEach(k => {
+            let opt = document.createElement('option'); opt.value = k; opt.textContent = k;
+            selectKelas.appendChild(opt);
+        });
     }
 
     function updateDaftarNama() {
@@ -308,8 +161,7 @@
         const selectNama = document.getElementById('nama');
         selectNama.innerHTML = '<option value="">-- Pilih Nama --</option>';
         dataSiswa.filter(s => s.kelas === kls).forEach(s => {
-            const opt = document.createElement('option');
-            opt.value = s.nama; opt.textContent = s.nama;
+            let opt = document.createElement('option'); opt.value = s.nama; opt.textContent = s.nama;
             selectNama.appendChild(opt);
         });
     }
@@ -318,6 +170,48 @@
         const nm = document.getElementById('nama').value;
         const s = dataSiswa.find(x => x.nama === nm);
         document.getElementById('nis').value = s ? s.nis : "";
+    }
+
+    function switchTab(tab) {
+        document.getElementById('tabInput').classList.toggle('hidden', tab !== 'input');
+        document.getElementById('tabReport').classList.toggle('hidden', tab !== 'report');
+        document.getElementById('btnTabInput').classList.toggle('active', tab === 'input');
+        document.getElementById('btnTabReport').classList.toggle('active', tab === 'report');
+        if(tab === 'report') loadRiwayat();
+    }
+
+    async function loadRiwayat() {
+        const body = document.getElementById('riwayatBody');
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center">Memuat data...</td></tr>';
+        try {
+            const resp = await fetch(API_URL + "?action=getRiwayat");
+            const data = await resp.json();
+            body.innerHTML = "";
+            data.forEach(r => {
+                body.innerHTML += `<tr>
+                    <td>${r.tanggal}</td>
+                    <td>${r.kelas}</td>
+                    <td>${r.nama}</td>
+                    <td>${r.status}</td>
+                    <td>${r.catatan}</td>
+                    <td>${r.tindak_lanjut}</td>
+                </tr>`;
+            });
+            document.getElementById('printDate').innerText = "Dicetak pada: " + new Date().toLocaleString('id-ID');
+        } catch (e) { body.innerHTML = '<tr><td colspan="6">Gagal memuat.</td></tr>'; }
+    }
+
+    function filterData() {
+        const input = document.getElementById("searchTable").value.toUpperCase();
+        const tr = document.getElementById("riwayatBody").getElementsByTagName("tr");
+        for (let i = 0; i < tr.length; i++) {
+            const tdNama = tr[i].getElementsByTagName("td")[2];
+            const tdKelas = tr[i].getElementsByTagName("td")[1];
+            if (tdNama || tdKelas) {
+                const txt = (tdNama.textContent || tdNama.innerText) + (tdKelas.textContent || tdKelas.innerText);
+                tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
     }
 
     async function simpan() {
@@ -332,23 +226,15 @@
             wali: currentUser,
             kelas: document.getElementById('kelas').value
         };
-
-        if(!payload.nama || !payload.catatan) return alert("Mohon lengkapi detail laporan!");
-
-        btn.disabled = true;
-        btn.innerHTML = "Sedang Mengirim...";
-
+        if(!payload.nama || !payload.catatan) return alert("Lengkapi data!");
+        btn.disabled = true; btn.innerText = "Menyimpan...";
         try {
             await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-            alert("✅ Laporan Perwalian Berhasil Disimpan!");
+            alert("Berhasil!");
             document.getElementById('catatan').value = "";
             document.getElementById('tindakLanjut').value = "";
-        } catch (e) { 
-            alert("Gagal menyimpan laporan!"); 
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = "🚀 Simpan Laporan";
-        }
+        } catch (e) { alert("Error!"); }
+        btn.disabled = false; btn.innerText = "Simpan Laporan";
     }
 </script>
 </body>
