@@ -1,213 +1,192 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Aplikasi Perwalian Siswa – Profesional</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Sistem Perwalian Siswa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root{
-      --primary:#1e3799;
-      --secondary:#f1f2f6;
-      --text:#2f3542;
-    }
     body{
-      font-family:"Segoe UI", Arial, sans-serif;
-      background:var(--secondary);
-      color:var(--text);
+      font-family:Segoe UI, Arial, sans-serif;
+      background:#f1f2f6;
       margin:0;
-      padding:20px;
-    }
-    .container{
-      max-width:1200px;
-      margin:auto;
     }
     header{
-      background:var(--primary);
+      background:#1e3799;
       color:#fff;
-      padding:20px;
-      border-radius:8px;
-      margin-bottom:20px;
+      padding:16px 20px;
     }
-    header h1{ margin:0; font-size:22px; }
-    header p{ margin:5px 0 0; font-size:14px; }
+    header h1{margin:0;font-size:20px}
+    header p{margin:4px 0 0;font-size:13px}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      background:#fff;
-      border-radius:8px;
-      overflow:hidden;
-      font-size:14px;
-    }
-    th,td{
-      padding:10px;
-      border-bottom:1px solid #eee;
-    }
-    th{
-      background:#dfe4ea;
-      text-align:left;
-    }
-    tr:hover{ background:#f8f9fa; }
-    a{ color:var(--primary); text-decoration:none; font-weight:600; }
-
+    .container{max-width:1100px;margin:auto;padding:20px}
     .card{
       background:#fff;
-      padding:20px;
       border-radius:8px;
-      margin-top:20px;
+      padding:20px;
       box-shadow:0 2px 6px rgba(0,0,0,.08);
+      margin-bottom:20px
     }
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:15px;
-    }
-    label{ font-size:13px; font-weight:600; }
-    input, textarea, select{
+    h3{margin-top:0}
+
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:10px;border-bottom:1px solid #eee}
+    th{background:#dfe4ea;text-align:left}
+    tr:hover{background:#f8f9fa}
+    a{color:#1e3799;text-decoration:none;font-weight:600}
+
+    label{font-size:13px;font-weight:600}
+    input,select,textarea{
       width:100%;
       padding:8px;
-      margin-top:5px;
+      margin-top:4px;
       border:1px solid #ccc;
-      border-radius:4px;
-      font-size:14px;
+      border-radius:4px
     }
-    textarea{ resize:vertical; }
+    textarea{resize:vertical}
     button{
-      background:var(--primary);
+      background:#1e3799;
       color:#fff;
       border:none;
       padding:10px 16px;
       border-radius:6px;
       cursor:pointer;
-      font-size:14px;
-      margin-top:10px;
+      margin-top:10px
     }
-    button:hover{ opacity:.9; }
-    footer{
-      margin-top:30px;
-      text-align:center;
-      font-size:12px;
-      color:#666;
-    }
+    button:hover{opacity:.9}
+
+    footer{text-align:center;font-size:12px;color:#777;padding:15px}
   </style>
 </head>
 <body>
-<div class="container">
 
 <header>
-  <h1>Aplikasi Perwalian Siswa</h1>
-  <p>Administrasi perwalian & pembinaan siswa – versi profesional</p>
+  <h1>Sistem Perwalian Siswa</h1>
+  <p>Login Wali Kelas & BK | Google Sheet Backend</p>
 </header>
 
-<table id="tabelSiswa">
-  <thead>
-    <tr>
-      <th>No</th>
-      <th>Nama Siswa</th>
-      <th>NISN</th>
-      <th>NIS</th>
-      <th>Status</th>
-      <th>Catatan Singkat</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<div class="container">
 
-<div class="card">
-  <h3>Form Perwalian Siswa</h3>
-  <div class="grid">
-    <div>
-      <label>Nama Siswa</label>
-      <input type="text" id="nama" readonly>
-    </div>
-    <div>
-      <label>Status Pembinaan</label>
-      <select id="status">
-        <option value="Baik">Baik</option>
-        <option value="Pembinaan">Perlu Pembinaan</option>
-        <option value="Perhatian">Perlu Perhatian Khusus</option>
-      </select>
-    </div>
-  </div>
+<!-- LOGIN -->
+<div class="card" id="loginBox">
+  <h3>Login Pengguna</h3>
+  <label>Email</label>
+  <input id="email">
+  <label>Password</label>
+  <input id="password" type="password">
+  <button onclick="login()">Login</button>
+</div>
 
-  <label>Catatan Lengkap Wali Kelas</label>
+<!-- DASHBOARD -->
+<div class="card" id="dashboard" style="display:none">
+  <h3>Data Siswa</h3>
+  <table id="tabel">
+    <thead>
+      <tr>
+        <th>NIS</th>
+        <th>Nama</th>
+        <th>Status</th>
+        <th>Catatan</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- FORM -->
+<div class="card" id="formBox" style="display:none">
+  <h3>Form Perwalian</h3>
+  <label>Nama Siswa</label>
+  <input id="nama" readonly>
+
+  <label>Status Pembinaan</label>
+  <select id="status">
+    <option>Baik</option>
+    <option>Pembinaan</option>
+    <option>Perhatian Khusus</option>
+  </select>
+
+  <label>Catatan Wali Kelas / BK</label>
   <textarea id="catatan" rows="4"></textarea>
 
-  <label>Tindak Lanjut</label>
-  <textarea id="tindaklanjut" rows="3"></textarea>
+  <button onclick="simpan()">Simpan Perwalian</button>
+</div>
 
-  <button onclick="simpan()">Simpan Data Perwalian</button>
 </div>
 
 <footer>
-  © 2026 – Aplikasi Perwalian Siswa | Digunakan untuk administrasi sekolah
+  © 2026 Sistem Perwalian Siswa | Frontend GitHub Pages
 </footer>
-</div>
 
 <script>
-const siswa=[
- {no:1,nama:"AI FITRI NURAENI",nisn:"0096668362",nis:"252610021"},
- {no:2,nama:"ANWAR MUTAQIN",nisn:"0082090856",nis:"252610022"},
- {no:3,nama:"AYYISY MAULIDA ISNAENI",nisn:"0091398794",nis:"252610023"},
- {no:4,nama:"Dede Nurul Alamsah",nisn:"0092302205",nis:"252610024"},
- {no:5,nama:"Fahmi Kurniansyah",nisn:"0109380488",nis:"252610025"},
- {no:6,nama:"FAIZ KURNIAWAN",nisn:"0097566149",nis:"252610026"},
- {no:7,nama:"FITRAH RIZKI RAMADON",nisn:"0083830690",nis:"252610027"},
- {no:8,nama:"ILFAH SADIATUL UMAH",nisn:"0106383999",nis:"252610028"},
- {no:9,nama:"KARIN NURA'ENI",nisn:"0102021500",nis:"252610030"},
- {no:10,nama:"LUTVI ABDUL JABAR",nisn:"0091021955",nis:"252610032"},
- {no:11,nama:"M H RISKI",nisn:"0105944251",nis:"252610034"},
- {no:12,nama:"M PARHAN MAULANA",nisn:"0091099684",nis:"252610033"},
- {no:13,nama:"PAKHRI KIRMAN",nisn:"0091869216",nis:"252610036"},
- {no:14,nama:"PURNAMA MAULIDAN",nisn:"0101074623",nis:"252610037"},
- {no:15,nama:"RAMA RADILA PUTRA",nisn:"0094851532",nis:"252610038"},
- {no:16,nama:"RANGGA ANUARI LESMANA",nisn:"0107077457",nis:"252610039"},
- {no:17,nama:"RAYNALDY RAFTANSYAH",nisn:"0093709866",nis:"252610040"},
- {no:18,nama:"Rikza Dzilfikri",nisn:"0099689828",nis:"252610041"},
- {no:19,nama:"RISA FADILA",nisn:"0104171921",nis:"252610042"},
- {no:20,nama:"RIZKI ABDUL ROJAK",nisn:"0096420510",nis:"252610043"},
- {no:21,nama:"SITI NAFISA",nisn:"0097047227",nis:"252610045"},
- {no:22,nama:"WENDI",nisn:"0095681312",nis:"252610046"}
+const API_URL = "https://script.google.com/macros/s/AKfycbx0JKgruxbT6DfYVzPukr5G2yIcn1gZzi5AZgL58i2JHaaowVHWYH4lG0Mw6W86unJqzA/exec";
+
+const siswa = [
+  {nis:"252610021",nama:"AI FITRI NURAENI"},
+  {nis:"252610022",nama:"ANWAR MUTAQIN"},
+  {nis:"252610023",nama:"AYYISY MAULIDA ISNAENI"},
+  {nis:"252610024",nama:"DEDE NURUL ALAMSAH"}
 ];
 
-let aktif=null;
+let aktif = null;
+
+function login(){
+ fetch(API_URL,{
+  method:"POST",
+  body:JSON.stringify({
+    email:email.value,
+    password:password.value
+  })
+ }).then(r=>r.json()).then(res=>{
+  if(res.status=="success"){
+    loginBox.style.display="none";
+    dashboard.style.display="block";
+    formBox.style.display="block";
+    render();
+  } else alert("Login gagal");
+ });
+}
 
 function render(){
- const tb=document.querySelector('#tabelSiswa tbody');
+ const tb=document.querySelector('#tabel tbody');
  tb.innerHTML='';
  siswa.forEach((s,i)=>{
-  s.status=s.status||'-';
-  s.catatan=s.catatan||'-';
   const tr=document.createElement('tr');
   tr.innerHTML=`
-   <td>${s.no}</td>
-   <td><a href="#" onclick="pilih(${i})">${s.nama}</a></td>
-   <td>${s.nisn}</td>
    <td>${s.nis}</td>
-   <td>${s.status}</td>
-   <td>${s.catatan}</td>`;
+   <td><a href="#" onclick="pilih(${i})">${s.nama}</a></td>
+   <td>${s.status||'-'}</td>
+   <td>${s.catatan||'-'}</td>`;
   tb.appendChild(tr);
  });
 }
 
 function pilih(i){
  aktif=i;
- document.getElementById('nama').value=siswa[i].nama;
- document.getElementById('status').value=siswa[i].status||'Baik';
- document.getElementById('catatan').value=siswa[i].catatan||'';
- document.getElementById('tindaklanjut').value=siswa[i].tindaklanjut||'';
+ nama.value=siswa[i].nama;
+ status.value=siswa[i].status||'Baik';
+ catatan.value=siswa[i].catatan||'';
 }
 
 function simpan(){
- if(aktif===null){ alert('Pilih siswa terlebih dahulu'); return; }
- siswa[aktif].status=document.getElementById('status').value;
- siswa[aktif].catatan=document.getElementById('catatan').value;
- siswa[aktif].tindaklanjut=document.getElementById('tindaklanjut').value;
- render();
- alert('Data perwalian berhasil disimpan');
-}
+ if(aktif===null){alert('Pilih siswa');return;}
+ siswa[aktif].status=status.value;
+ siswa[aktif].catatan=catatan.value;
 
-render();
+ fetch(API_URL,{
+  method:"POST",
+  body:JSON.stringify({
+    action:"simpan",
+    nis:siswa[aktif].nis,
+    nama:siswa[aktif].nama,
+    status:status.value,
+    catatan:catatan.value
+  })
+ });
+
+ render();
+ alert('Data tersimpan');
+}
 </script>
+
 </body>
 </html>
