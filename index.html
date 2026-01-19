@@ -8,20 +8,28 @@
         :root { --primary: #4361ee; --bg: #f8fafc; }
         body { font-family: sans-serif; background: var(--bg); padding: 20px; color: #334155; }
         .card { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; }
-        select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 13px; }
+        select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
         button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; margin-top: 20px; font-weight: bold; cursor: pointer; }
-        button:disabled { background: #94a3b8; }
-        #loading { text-align: center; font-size: 14px; color: var(--primary); font-weight: bold; }
+        .hidden { display: none; }
+        #userInfo { font-size: 12px; text-align: right; color: #64748b; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="margin-top:0; color:var(--primary)">Form Perwalian</h2>
-    <div id="loading">Memuat Data dari Google Sheet...</div>
+    <h2 style="margin-top:0; color:var(--primary); text-align: center;">Sistem Perwalian</h2>
+    
+    <div id="loginSection">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="wali@smk.sch.id">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="123456">
+        <button id="btnLogin" onclick="login()">Masuk</button>
+    </div>
 
-    <div id="formBody" style="display:none">
+    <div id="mainForm" class="hidden">
+        <div id="userInfo"></div>
         <label>Pilih Kelas</label>
         <select id="kelas" onchange="updateDaftarNama()">
             <option value="">-- Pilih Kelas --</option>
@@ -42,94 +50,108 @@
             <option value="Perhatian Khusus">🔴 Perhatian Khusus</option>
         </select>
 
-        <label>Detail Laporan</label>
-        <textarea id="catatan" rows="4"></textarea>
+        <label>Detail Laporan (Catatan)</label>
+        <textarea id="catatan" rows="3"></textarea>
+
+        <label>Tindak Lanjut</label>
+        <textarea id="tindakLanjut" rows="2" placeholder="Apa tindakan yang dilakukan?"></textarea>
 
         <button id="btnSimpan" onclick="simpan()">Simpan Laporan</button>
+        <button onclick="location.reload()" style="background:#64748b; margin-top:10px">Keluar</button>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxfUqx516jDA0WmGVMpN2aPxw_L7zlz3Ipa0DmnU76g_4VaZRfjUXbz61mO0bx3eKYf3Q/exec"; // Ganti dengan URL dari Deploy Apps Script
-    let dataSiswa = [DATABASE];
+    const API_URL = "https://script.google.com/macros/s/AKfycbz3gWP4kbrngRtIUc_H5t_fnC3S7K8xeBJeP7al4hMYUfSf9sOhYoqYNZvcF1FEbQ_45A/exec"; 
+    let dataSiswa = [];
+    let currentUser = "";
 
-    // 1. Ambil data dari Google Sheet saat aplikasi dibuka
-    window.onload = async () => {
+    async function login() {
+        const email = document.getElementById('loginEmail').value;
+        const pass = document.getElementById('loginPass').value;
+        const btn = document.getElementById('btnLogin');
+
+        if(!email || !pass) return alert("Isi email dan password!");
+        
+        btn.disabled = true;
+        btn.textContent = "Verifikasi...";
+
         try {
-            const resp = await fetch(API_URL);
-            dataSiswa = await resp.json();
-            
-            // Ekstrak Kelas Unik
-            const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
-            const selectKelas = document.getElementById('kelas');
-            
-            listKelas.forEach(kls => {
-                const opt = document.createElement('option');
-                opt.value = kls;
-                opt.textContent = kls;
-                selectKelas.appendChild(opt);
+            const resp = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "login", email: email, password: pass })
             });
+            const res = await resp.json();
 
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('formBody').style.display = 'block';
-        } catch (e) {
-            document.getElementById('loading').innerHTML = "❌ Gagal memuat data. Periksa API_URL.";
-        }
-    };
+            if(res.status === "success") {
+                currentUser = res.email;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainForm').classList.remove('hidden');
+                document.getElementById('userInfo').innerText = "Login sebagai: " + currentUser;
+                loadSiswa();
+            } else {
+                alert(res.msg);
+                btn.disabled = false;
+                btn.textContent = "Masuk";
+            }
+        } catch (e) { alert("Error login!"); btn.disabled = false; }
+    }
 
-    // 2. Filter Nama berdasarkan Kelas yang dipilih
+    async function loadSiswa() {
+        const resp = await fetch(API_URL + "?action=getSiswa");
+        dataSiswa = await resp.json();
+        const listKelas = [...new Set(dataSiswa.map(s => s.kelas))];
+        const selectKelas = document.getElementById('kelas');
+        listKelas.forEach(kls => {
+            const opt = document.createElement('option');
+            opt.value = kls; opt.textContent = kls;
+            selectKelas.appendChild(opt);
+        });
+    }
+
     function updateDaftarNama() {
         const kls = document.getElementById('kelas').value;
         const selectNama = document.getElementById('nama');
         selectNama.innerHTML = '<option value="">-- Pilih Nama --</option>';
-        
-        const filtered = dataSiswa.filter(s => s.kelas === kls);
-        filtered.forEach(s => {
+        dataSiswa.filter(s => s.kelas === kls).forEach(s => {
             const opt = document.createElement('option');
-            opt.value = s.nama;
-            opt.textContent = s.nama;
+            opt.value = s.nama; opt.textContent = s.nama;
             selectNama.appendChild(opt);
         });
-        document.getElementById('nis').value = "";
     }
 
-    // 3. Isi NIS otomatis saat Nama dipilih
     function isiNIS() {
         const nm = document.getElementById('nama').value;
-        const siswa = dataSiswa.find(s => s.nama === nm);
-        document.getElementById('nis').value = siswa ? siswa.nis : "";
+        const s = dataSiswa.find(x => x.nama === nm);
+        document.getElementById('nis').value = s ? s.nis : "";
     }
 
-    // 4. Kirim Data
     async function simpan() {
         const btn = document.getElementById('btnSimpan');
         const payload = {
+            action: "simpan",
             nis: document.getElementById('nis').value,
             nama: document.getElementById('nama').value,
-            kelas: document.getElementById('kelas').value,
             status: document.getElementById('status').value,
-            catatan: document.getElementById('catatan').value
+            catatan: document.getElementById('catatan').value,
+            tindak_lanjut: document.getElementById('tindakLanjut').value,
+            wali: currentUser,
+            kelas: document.getElementById('kelas').value
         };
 
-        if (!payload.nama || !payload.catatan) return alert("Mohon lengkapi data!");
+        if(!payload.nama || !payload.catatan) return alert("Lengkapi data!");
 
         btn.disabled = true;
-        btn.textContent = "Mengirim...";
+        btn.textContent = "Menyimpan...";
 
         try {
-            await fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(payload)
-            });
+            await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
             alert("✅ Laporan Berhasil Disimpan!");
             document.getElementById('catatan').value = "";
-        } catch (e) {
-            alert("Terjadi kesalahan.");
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "Simpan Laporan";
-        }
+            document.getElementById('tindakLanjut').value = "";
+        } catch (e) { alert("Error!"); }
+        btn.disabled = false;
+        btn.textContent = "Simpan Laporan";
     }
 </script>
 </body>
